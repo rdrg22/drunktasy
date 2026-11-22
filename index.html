@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3EBD3">
+<title>El Diario de la Vergüenza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F3EBD3; --paper2:#E9DEBF; --ink:#141210; --ink2:#3a352d;
+  --red:#D7261E; --red2:#a91a14; --yellow:#FFE600;
+  --head:'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  --label:'Oswald', 'Arial Narrow', sans-serif;
+  --body:'PT Serif', Georgia, 'Times New Roman', serif;
+  --w:min(100vw, 520px);
+}
+*{box-sizing:border-box; border-radius:0 !important; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; background:var(--paper); color:var(--ink)}
+body{
+  font-family:var(--body); font-size:16px; line-height:1.4;
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(rgba(60,40,10,.06) 1px, transparent 1.2px),
+    linear-gradient(180deg, rgba(255,255,255,.25), rgba(120,90,30,.06));
+  background-size:4px 4px, 100% 100%;
+  min-height:100vh;
+}
+button{font:inherit; color:inherit; cursor:pointer; border:0; background:none}
+input,textarea,select{font:inherit; color:var(--ink); background:#fffaf0; border:2px solid var(--ink); padding:10px 12px; width:100%; outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 4px 0 var(--ink)}
+#app{max-width:520px; margin:0 auto; padding:0 16px calc(96px + env(safe-area-inset-bottom)); position:relative; overflow:hidden}
+
+/* ---------- MASTHEAD ---------- */
+.mast{padding:14px 0 0; text-align:center; border-bottom:4px double var(--ink)}
+.mast-top{display:flex; justify-content:space-between; align-items:center; font-family:var(--label); font-size:11px; letter-spacing:.08em; text-transform:uppercase; border-bottom:1px solid var(--ink); padding-bottom:6px}
+.who{background:var(--ink); color:var(--paper); padding:4px 8px; font-family:var(--label); font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; max-width:55%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.who.anon{background:var(--red); animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.55}}
+.logo{font-family:var(--head); text-transform:uppercase; line-height:.86; margin:10px 0 4px; letter-spacing:-.01em}
+.logo .el{display:block; line-height:1.15; margin-bottom:14px; font-size:calc((var(--w) - 32px) * .075); letter-spacing:.3em; font-family:var(--label); font-weight:700}
+.logo .big{display:block; font-size:calc((var(--w) - 32px) * .128)}
+.logo .big em{font-style:normal; color:var(--red)}
+.mast-bot{display:flex; justify-content:space-between; font-family:var(--label); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; border-top:1px solid var(--ink); padding:5px 0 6px; gap:8px}
+.mast-bot span:nth-child(2){color:var(--red); font-weight:700}
+
+/* ---------- TICKER ---------- */
+.ticker{margin:12px -24px 0; background:var(--red); color:#fff; transform:rotate(-1.6deg); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); display:flex; overflow:hidden; white-space:nowrap; font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:14px}
+.ticker b{background:var(--yellow); color:var(--ink); padding:6px 10px 6px 30px; flex:none; position:relative; z-index:2; box-shadow:6px 0 0 var(--ink)}
+.ticker .run{display:inline-block; padding:6px 0; animation:tick 28s linear infinite; padding-left:20px}
+.ticker .run span{margin-right:28px}
+.ticker .run span::before{content:"★ "; color:var(--yellow)}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- STAMPS ---------- */
+.stamp{display:inline-block; font-family:var(--head); text-transform:uppercase; letter-spacing:.04em; padding:3px 8px 2px; border:3px solid currentColor; transform:rotate(-6deg); line-height:1.05; font-size:15px; white-space:nowrap}
+.stamp.excl{background:var(--yellow); color:var(--ink); border-color:var(--ink); box-shadow:3px 3px 0 var(--ink)}
+.stamp.red{color:var(--red); background:rgba(255,255,255,.35); mix-blend-mode:multiply}
+.stamp.ok{color:#1d6b2a; background:rgba(255,255,255,.3); mix-blend-mode:multiply}
+.stamp.pend{color:var(--red); border-style:dashed; background:rgba(255,230,0,.25)}
+.stamp.ink{color:var(--ink)}
+
+/* ---------- FRONT PAGE ---------- */
+.kick-row{display:flex; align-items:center; gap:10px; margin:22px 0 6px; flex-wrap:wrap}
+.kicker{font-family:var(--label); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:13px; border-bottom:3px solid var(--red); color:var(--red)}
+.mega{font-family:var(--head); text-transform:uppercase; line-height:.84; margin:6px 0 4px; word-break:break-word; letter-spacing:-.01em}
+.mega .q{color:var(--red)}
+.sub{font-family:var(--head); text-transform:uppercase; font-size:26px; line-height:.98; margin:6px 0 12px; font-weight:400}
+.sub .hl{background:var(--ink); color:var(--yellow); padding:0 6px; box-decoration-break:clone; -webkit-box-decoration-break:clone}
+.photo-wrap{position:relative; margin:4px 0 12px; filter:drop-shadow(5px 6px 0 rgba(20,18,16,.85))}
+.clip{clip-path:var(--jag1)}
+.clip2{clip-path:var(--jag2)}
+.photo{aspect-ratio:4/3; background:#cfc3a2; position:relative; overflow:hidden; display:grid; place-items:center}
+.photo img{width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.35) brightness(1.02); mix-blend-mode:multiply}
+.halftone{position:absolute; inset:0; background:radial-gradient(circle at 50% 40%, transparent 0 30%, rgba(0,0,0,.0) 31%), radial-gradient(var(--ink) 1.3px, transparent 1.6px) 0 0/7px 7px; opacity:.28}
+.initials{font-family:var(--head); font-size:150px; line-height:1; color:var(--ink); position:relative; text-shadow:6px 6px 0 var(--red)}
+.band{position:absolute; top:22px; right:-58px; width:240px; text-align:center; transform:rotate(38deg); background:var(--red); color:#fff; font-family:var(--head); font-size:20px; padding:4px 0; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); letter-spacing:.06em; z-index:2}
+.photo-cap{font-family:var(--label); font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-top:-4px; color:var(--ink2)}
+.lede{columns:2; column-gap:14px; column-rule:1px solid var(--ink); text-align:justify; hyphens:auto; font-size:14.5px; margin:10px 0 0}
+.lede::first-letter{font-family:var(--head); float:left; font-size:56px; line-height:.8; padding:4px 6px 0 0; color:var(--red)}
+.rule{border:0; border-top:4px double var(--ink); margin:22px 0 12px}
+.sect{font-family:var(--head); font-size:30px; text-transform:uppercase; line-height:.95; margin:0 0 4px}
+.sect small{display:block; font-family:var(--body); font-style:italic; font-size:14px; text-transform:none; color:var(--ink2); margin-top:4px}
+
+.rank{list-style:none; margin:10px 0 0; padding:0; border-top:2px solid var(--ink)}
+.rank li{display:grid; grid-template-columns:48px 1fr auto; gap:10px; align-items:center; padding:9px 0; border-bottom:1px solid var(--ink)}
+.rank .n{font-family:var(--head); font-size:34px; line-height:1; text-align:center}
+.rank li:nth-child(-n+3) .n{color:var(--red)}
+.rank .nm{font-family:var(--head); font-size:21px; text-transform:uppercase; line-height:1}
+.rank .rn{font-size:13px; font-style:italic; color:var(--ink2)}
+.rank .pt{font-family:var(--head); font-size:24px; text-align:right; line-height:1}
+.rank .pt small{display:block; font-family:var(--label); font-size:10px; letter-spacing:.06em}
+.rank .tag{font-family:var(--label); font-size:10px; font-weight:700; text-transform:uppercase; background:var(--ink); color:var(--paper); padding:1px 5px; margin-left:4px; vertical-align:2px}
+.rank .tag.red{background:var(--red); color:#fff}
+.monje{margin:16px 0 0; border:3px solid var(--ink); padding:12px; position:relative; background:repeating-linear-gradient(-45deg, transparent 0 10px, rgba(20,18,16,.04) 10px 20px)}
+.monje h3{font-family:var(--head); font-size:28px; margin:0; text-transform:uppercase; line-height:.95}
+.monje p{margin:6px 0 0; font-size:14.5px}
+.monje .stamp{position:absolute; right:10px; top:-14px; background:var(--paper)}
+
+.medals-strip{display:flex; gap:8px; overflow-x:auto; padding:6px 2px 12px; scrollbar-width:none}
+.medal{flex:none; border:2px solid var(--ink); background:#fffaf0; padding:8px 10px; min-width:150px; box-shadow:3px 3px 0 var(--ink)}
+.medal .t{font-family:var(--head); font-size:17px; text-transform:uppercase; line-height:1}
+.medal .w{font-family:var(--label); font-size:12px; font-weight:700; color:var(--red); text-transform:uppercase; margin-top:3px}
+.medal .d{font-size:12px; font-style:italic; color:var(--ink2); margin-top:3px}
+
+/* ---------- EMPTY ---------- */
+.empty{margin:34px 0; text-align:center; padding:26px 12px; border:3px dashed var(--ink); position:relative}
+.empty h2{font-family:var(--head); text-transform:uppercase; font-size:44px; line-height:.9; margin:10px 0}
+.empty p{font-style:italic; margin:0 0 14px}
+
+/* ---------- BUTTONS ---------- */
+.btn{display:inline-block; font-family:var(--head); text-transform:uppercase; font-size:22px; letter-spacing:.03em; padding:12px 18px 10px; background:var(--ink); color:var(--paper); border:3px solid var(--ink); box-shadow:5px 5px 0 var(--red); transition:transform .06s, box-shadow .06s}
+.btn:active{transform:translate(4px,4px); box-shadow:1px 1px 0 var(--red)}
+.btn.red{background:var(--red); color:#fff; box-shadow:5px 5px 0 var(--ink)}
+.btn.red:active{box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:transparent; color:var(--ink); box-shadow:4px 4px 0 var(--ink)}
+.btn.block{display:block; width:100%; text-align:center}
+.btn.sm{font-size:16px; padding:8px 12px 6px; box-shadow:3px 3px 0 var(--ink)}
+.btn[disabled]{opacity:.4; pointer-events:none}
+.link{font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:.06em; text-decoration:underline; text-underline-offset:3px}
+
+/* ---------- CONFESAR ---------- */
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0}
+.opt{border:2px solid var(--ink); background:#fffaf0; padding:10px 4px 8px; text-align:center; position:relative; min-height:96px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px}
+.opt .e{font-size:30px; line-height:1; filter:grayscale(.2)}
+.opt .l{font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12.5px; line-height:1.05}
+.opt .p{font-family:var(--head); font-size:16px; color:var(--red)}
+.opt.on{background:var(--ink); color:var(--paper); box-shadow:4px 4px 0 var(--red); transform:translate(-2px,-2px)}
+.opt.on .p{color:var(--yellow)}
+.opt.add{border-style:dashed; background:transparent}
+.qty{display:flex; align-items:center; gap:0; border:3px solid var(--ink); width:max-content}
+.qty button{font-family:var(--head); font-size:26px; width:48px; height:48px; background:var(--paper2)}
+.qty span{font-family:var(--head); font-size:28px; min-width:56px; text-align:center}
+.confess-row{display:flex; gap:12px; align-items:center; margin:8px 0 6px}
+.confess-row .btn{flex:1}
+.tabs2{display:grid; grid-template-columns:1fr 1fr; border:3px solid var(--ink); margin:12px 0}
+.tabs2 button{font-family:var(--head); font-size:18px; text-transform:uppercase; padding:10px 4px 8px}
+.tabs2 button.on{background:var(--red); color:#fff}
+.field{margin:10px 0}
+.field label{display:block; font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:.06em; margin-bottom:4px}
+.file-btn{display:flex; align-items:center; gap:10px; border:2px dashed var(--ink); padding:10px; background:rgba(255,255,255,.3); font-family:var(--label); text-transform:uppercase; font-size:13px; font-weight:700}
+.file-btn img{width:64px; height:64px; object-fit:cover; filter:grayscale(1) contrast(1.3); border:2px solid var(--ink)}
+.sins{list-style:none; padding:0; margin:8px 0; border-top:1px solid var(--ink)}
+.sins li{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dotted var(--ink); font-size:14.5px; gap:8px}
+.sins .x{font-family:var(--label); font-weight:700; font-size:11px; text-transform:uppercase; color:var(--red); border:2px solid var(--red); padding:2px 6px; flex:none}
+
+/* ---------- MURO / JUICIO ---------- */
+.story{margin:22px 0; position:relative}
+.story .cut{background:#fbf5e4; padding:22px 14px 14px; filter:drop-shadow(4px 5px 0 rgba(20,18,16,.8))}
+.story .cut > div{position:relative}
+.story .cat{font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:11.5px; letter-spacing:.08em; color:var(--red); display:flex; justify-content:space-between; border-bottom:1px solid var(--ink); padding-bottom:4px}
+.story h3{font-family:var(--head); text-transform:uppercase; font-size:27px; line-height:.95; margin:8px 0 6px; font-weight:400}
+.story .note{font-size:15px; margin:6px 0}
+.story .note::before{content:"«"} .story .note::after{content:"»"}
+.story .meta{font-family:var(--label); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink2); margin-top:8px; display:flex; justify-content:space-between; gap:8px}
+.story .ph{margin:10px 0 4px; aspect-ratio:4/3; background:#cfc3a2; overflow:hidden}
+.story .ph img{width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.35); mix-blend-mode:multiply}
+.story .st{position:absolute; right:4px; top:-4px; z-index:3; font-size:17px; transform:rotate(-8deg); background:#fbf5e4}
+.story .cut{margin-top:12px}
+.story:nth-child(even) .cut{transform:rotate(.8deg)}
+.story:nth-child(odd) .cut{transform:rotate(-.6deg)}
+.votes{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+.bar{height:14px; border:2px solid var(--ink); display:flex; margin-top:10px; background:#fffaf0}
+.bar i{display:block; height:100%}
+.bar .y{background:var(--red)} .bar .no{background:var(--ink); margin-left:auto}
+.tally{font-family:var(--label); font-weight:700; font-size:12px; text-transform:uppercase; display:flex; justify-content:space-between; margin-top:4px}
+
+/* ---------- HEMEROTECA ---------- */
+.season{border:2px solid var(--ink); margin:12px 0; background:#fbf5e4}
+.season summary{list-style:none; padding:10px 12px; display:grid; grid-template-columns:1fr auto; gap:4px; cursor:pointer}
+.season summary::-webkit-details-marker{display:none}
+.season .mo{font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12px; color:var(--red); letter-spacing:.08em}
+.season .wn{font-family:var(--head); font-size:24px; text-transform:uppercase; line-height:1}
+.season .mk{font-size:13px; font-style:italic}
+.season .rank{margin:0 12px 12px}
+.badges{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+.badge{font-family:var(--label); font-weight:700; font-size:11px; text-transform:uppercase; border:2px solid var(--ink); padding:2px 6px; background:var(--yellow)}
+
+/* ---------- NAV ---------- */
+nav.bottom{position:fixed; left:0; right:0; bottom:0; z-index:40; background:var(--ink); border-top:4px solid var(--red); padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom .in{max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr)}
+nav.bottom button{color:var(--paper); font-family:var(--head); font-size:13.5px; text-transform:uppercase; padding:12px 2px 11px; letter-spacing:.03em; position:relative; line-height:1}
+nav.bottom button.on{background:var(--paper); color:var(--ink)}
+nav.bottom button.cf{background:var(--red); color:#fff; font-size:15px}
+nav.bottom button.cf.on{background:var(--yellow); color:var(--ink)}
+nav.bottom .dot{position:absolute; top:4px; right:8px; background:var(--yellow); color:var(--ink); font-family:var(--label); font-size:10px; font-weight:700; padding:0 4px; min-width:16px}
+
+/* ---------- MODAL ---------- */
+#modal{position:fixed; inset:0; z-index:60; background:rgba(20,18,16,.72); display:none; align-items:flex-end; justify-content:center}
+#modal.show{display:flex}
+#modal .sheet{background:var(--paper); width:100%; max-width:520px; max-height:92vh; overflow:auto; border-top:6px solid var(--red); padding:18px 16px calc(24px + env(safe-area-inset-bottom)); animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px); opacity:0}}
+.sheet h2{font-family:var(--head); font-size:34px; text-transform:uppercase; line-height:.92; margin:0 0 4px}
+.sheet .x{float:right; font-family:var(--head); font-size:26px; line-height:1; padding:0 4px}
+.plist{list-style:none; padding:0; margin:12px 0; border-top:2px solid var(--ink)}
+.plist button{display:flex; justify-content:space-between; width:100%; padding:11px 4px; border-bottom:1px solid var(--ink); text-align:left; align-items:center}
+.plist button b{font-family:var(--head); font-size:21px; text-transform:uppercase; font-weight:400}
+.plist button i{font-size:13px}
+.plist button.me{background:var(--ink); color:var(--paper)}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.mode-note{font-family:var(--label); font-size:12px; text-transform:uppercase; background:var(--yellow); border:2px solid var(--ink); padding:6px 8px; margin:14px 0 0; font-weight:700}
+.small{font-size:13px; color:var(--ink2)}
+code{font-size:12px; word-break:break-all; background:#fffaf0; border:1px solid var(--ink); padding:2px 4px; display:block}
+
+/* ---------- TOAST / OVERLAYS ---------- */
+#toast{position:fixed; left:50%; top:14px; transform:translate(-50%,-140%); z-index:80; width:calc(100% - 32px); max-width:488px; background:var(--ink); color:var(--paper); border:3px solid var(--ink); box-shadow:5px 5px 0 var(--red); padding:10px 12px; font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:14px; transition:transform .28s cubic-bezier(.2,1.4,.4,1)}
+#toast.show{transform:translate(-50%,0)}
+#toast.alarm{background:var(--red); color:#fff; box-shadow:5px 5px 0 var(--ink)}
+#stampfx{position:fixed; inset:0; z-index:90; display:none; place-items:center; pointer-events:none; background:rgba(243,235,211,.55)}
+#stampfx.show{display:grid}
+#stampfx .big{font-family:var(--head); font-size:min(19vw,100px); text-transform:uppercase; padding:6px 20px 2px; border:8px solid var(--ink); background:var(--yellow); color:var(--ink); box-shadow:10px 10px 0 var(--red); text-align:center; line-height:.95}
+#stampfx .big small{display:block; font-family:var(--label); font-size:15px; letter-spacing:.08em; font-weight:700; padding-bottom:6px}
+#stampfx.show .big{animation:slam .62s cubic-bezier(.3,0,.4,1) forwards}
+@keyframes slam{
+  0%{transform:scale(3.4) rotate(-32deg); opacity:0}
+  48%{transform:scale(.88) rotate(-11deg); opacity:1}
+  64%{transform:scale(1.08) rotate(-13deg)}
+  80%{transform:scale(.97) rotate(-12deg)}
+  100%{transform:scale(1) rotate(-12deg); opacity:1}
+}
+.shake{animation:shake .35s .28s}
+@keyframes shake{20%{transform:translate(-7px,4px)}40%{transform:translate(6px,-5px)}60%{transform:translate(-4px,3px)}80%{transform:translate(3px,-2px)}}
+#breaking{position:fixed; inset:0; z-index:95; display:none; background:var(--red); color:#fff; flex-direction:column; justify-content:center; padding:24px; text-align:left; overflow:hidden}
+#breaking.show{display:flex; animation:flash .5s steps(2) 2}
+@keyframes flash{50%{background:var(--ink)}}
+#breaking .lb{font-family:var(--head); font-size:28px; background:var(--yellow); color:var(--ink); padding:4px 10px 2px; width:max-content; transform:rotate(-3deg)}
+#breaking h1{font-family:var(--head); text-transform:uppercase; font-size:min(15vw,74px); line-height:.86; margin:16px 0}
+#breaking p{font-family:var(--label); text-transform:uppercase; font-weight:700; letter-spacing:.06em}
+@media (prefers-reduced-motion: reduce){ .ticker .run{animation:none} #stampfx.show .big{animation:none; transform:rotate(-12deg)} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav class="bottom"><div class="in" id="nav"></div></nav>
+<div id="modal"></div>
+<div id="toast"></div>
+<div id="stampfx"><div class="big"></div></div>
+<div id="breaking"></div>
+
+<script>
+/* ======================================================================
+   EL DIARIO DE LA VERGÜENZA
+   Configura aquí tu Supabase (o pásalo por el enlace de invitación:
+   index.html#sb=https://xxxx.supabase.co&k=ANON_KEY).
+   Sin configuración, la app funciona en MODO PRUEBA (solo este navegador).
+   ====================================================================== */
+const CONFIG = { SUPABASE_URL: '', SUPABASE_ANON_KEY: '' };
+const POLL_MS = 8000;
+
+const DRINKS = [
+  {type:'cana',    label:'Caña / cerveza', emoji:'🍺', points:1},
+  {type:'vino',    label:'Vino',           emoji:'🍷', points:1},
+  {type:'cubata',  label:'Cubata',         emoji:'🍹', points:2},
+  {type:'chupito', label:'Chupito',        emoji:'🥃', points:2},
+  {type:'raro',    label:'«Lo raro»',      emoji:'🧪', points:3},
+];
+const ANECS = [
+  {type:'audio', label:'Audio vergonzoso',        emoji:'🎙️', points:3, head:'{A} MANDA UN AUDIO DE CUATRO MINUTOS QUE NO DEBERÍA EXISTIR'},
+  {type:'ex',    label:'Escribir al ex',          emoji:'💌', points:5, head:'{A} ESCRIBE AL EX. LOS VECINOS YA LO SABÍAN'},
+  {type:'perder',label:'Perder algo',             emoji:'🔑', points:3, head:'{A} PIERDE ALGO POR EL CAMINO. TAMBIÉN LA DIGNIDAD'},
+  {type:'sofa',  label:'Dormirse en sofá ajeno',  emoji:'🛋️', points:2, head:'{A} AMANECE EN UN SOFÁ QUE NO ES SUYO Y PIDE EL DESAYUNO'},
+  {type:'chapa', label:'Chapa a un desconocido',  emoji:'🗣️', points:2, head:'{A} LE SUELTA LA CHAPA A UN DESCONOCIDO. EL DESCONOCIDO PIDE AUXILIO'},
+];
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DRINK_QUIPS = [
+  'Confesión registrada. Tu hígado ha sido notificado.',
+  'Apuntado. Mañana lo niegas, pero aquí consta.',
+  'La redacción toma nota. Y la juzga.',
+  'Sumado. Tu madre no se va a enterar por nosotros (sí).',
+  'Otra más para la hemeroteca.',
+  'Recibido. Hidrátate, criatura.',
+];
+const EVENT_COLS = 'id,player_id,kind,type,label,points,note,has_photo,reported_by,status,month,created_at';
+
+/* ---------------- utilidades ---------------- */
+const LS = {
+  get(k,d){ try{ const v = localStorage.getItem(k); return v==null ? d : JSON.parse(v) }catch{ return d } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch{} },
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const up = s => String(s ?? '').toLocaleUpperCase('es-ES');
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id'+Date.now()+Math.random().toString(16).slice(2));
+const pad = n => String(n).padStart(2,'0');
+const monthKey = d => { d = new Date(d); return d.getFullYear()+'-'+pad(d.getMonth()+1) };
+const curMonth = () => monthKey(new Date());
+const monthName = k => { const [y,m] = k.split('-'); return MONTHS[+m-1]+' '+y };
+const pick = (arr, seed) => arr[Math.abs(hash(seed)) % arr.length];
+function hash(s){ s=String(s); let h=0; for(let i=0;i<s.length;i++){ h=(h<<5)-h+s.charCodeAt(i); h|=0 } return h }
+function ago(t){
+  const s = (Date.now() - new Date(t)) / 1000;
+  if (s < 60) return 'hace un momento';
+  if (s < 3600) return 'hace '+Math.floor(s/60)+' min';
+  if (s < 86400) return 'hace '+Math.floor(s/3600)+' h';
+  const d = Math.floor(s/86400); return d===1 ? 'ayer' : 'hace '+d+' días';
+}
+function daysLeft(){ const n=new Date(); return new Date(n.getFullYear(), n.getMonth()+1, 0).getDate() - n.getDate() }
+function dayOfYear(){ const n=new Date(); return Math.floor((n - new Date(n.getFullYear(),0,0))/86400000) }
+function jag(seed){
+  let s = seed; const r = () => { s = (s*9301+49297) % 233280; return s/233280 };
+  const N = 16, a = 2.6, P = [];
+  for(let i=0;i<=N;i++) P.push(`${(i/N*100).toFixed(1)}% ${(r()*a).toFixed(1)}%`);
+  for(let i=1;i<=N;i++) P.push(`${(100-r()*a).toFixed(1)}% ${(i/N*100).toFixed(1)}%`);
+  for(let i=N-1;i>=0;i--) P.push(`${(i/N*100).toFixed(1)}% ${(100-r()*a).toFixed(1)}%`);
+  for(let i=N-1;i>=1;i--) P.push(`${(r()*a).toFixed(1)}% ${(i/N*100).toFixed(1)}%`);
+  return `polygon(${P.join(',')})`;
+}
+document.documentElement.style.setProperty('--jag1', jag(7));
+document.documentElement.style.setProperty('--jag2', jag(4242));
+
+/* ---------------- almacenamiento ---------------- */
+function resolveConfig(){
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('sb') && h.get('k')) {
+    LS.set('ddv_cfg', {url:h.get('sb'), key:h.get('k')});
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+  if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) return {url:CONFIG.SUPABASE_URL, key:CONFIG.SUPABASE_ANON_KEY, fixed:true};
+  return LS.get('ddv_cfg', null);
+}
+function remoteDB(cfg){
+  const base = cfg.url.replace(/\/+$/,'') + '/rest/v1/';
+  const H = {apikey:cfg.key, Authorization:'Bearer '+cfg.key, 'Content-Type':'application/json'};
+  async function req(path, opts={}){
+    const r = await fetch(base+path, {...opts, headers:{...H, ...(opts.headers||{})}});
+    if (!r.ok) throw new Error(r.status+' '+(await r.text()));
+    const t = await r.text(); return t ? JSON.parse(t) : null;
+  }
+  const T = t => 'ddv_'+t;
+  return {
+    remote:true,
+    list: (t) => req(`${T(t)}?select=${t==='events'?EVENT_COLS:'*'}&order=created_at.asc`),
+    insert: (t,row) => req(T(t), {method:'POST', headers:{Prefer:'return=representation'}, body:JSON.stringify(row)}).then(r=>r[0]),
+    update: (t,id,patch) => req(`${T(t)}?id=eq.${encodeURIComponent(id)}`, {method:'PATCH', body:JSON.stringify(patch)}),
+    remove: (t,id) => req(`${T(t)}?id=eq.${encodeURIComponent(id)}`, {method:'DELETE'}),
+    vote: (row) => req(`${T('votes')}?on_conflict=event_id,voter_id`, {method:'POST', headers:{Prefer:'resolution=merge-duplicates,return=minimal'}, body:JSON.stringify(row)}),
+    photo: (id) => req(`${T('events')}?id=eq.${encodeURIComponent(id)}&select=photo`).then(r => r[0] && r[0].photo),
+  };
+}
+function localDB(){
+  const load = () => LS.get('ddv_local', {players:[], events:[], votes:[], categories:[]});
+  const save = db => LS.set('ddv_local', db);
+  return {
+    remote:false,
+    async list(t){ const rows = load()[t] || []; return t==='events' ? rows.map(({photo, ...r}) => r) : rows },
+    async insert(t,row){ const db = load(); const r = {id:uid(), created_at:new Date().toISOString(), ...row}; db[t].push(r); save(db); return t==='events' ? (({photo,...x})=>x)(r) : r },
+    async update(t,id,patch){ const db = load(); db[t] = db[t].map(r => r.id===id ? {...r, ...patch} : r); save(db) },
+    async remove(t,id){ const db = load(); db[t] = db[t].filter(r => r.id!==id); if (t==='events') db.votes = db.votes.filter(v => v.event_id!==id); save(db) },
+    async vote(row){ const db = load(); db.votes = db.votes.filter(v => !(v.event_id===row.event_id && v.voter_id===row.voter_id)); db.votes.push({created_at:new Date().toISOString(), ...row}); save(db) },
+    async photo(id){ const e = load().events.find(e => e.id===id); return e && e.photo },
+  };
+}
+let CFG = resolveConfig();
+let DB = CFG ? remoteDB(CFG) : localDB();
+
+/* ---------------- estado ---------------- */
+const S = {
+  players:[], events:[], votes:[], categories:[],
+  me: LS.get('ddv_me', null), tab: LS.get('ddv_tab', 'portada'),
+  loaded:false, error:null,
+  f: {drink:'cana', qty:1, mode:'self', anec:null, target:'', note:'', photo:null},
+};
+const photoCache = new Map();
+const player = id => S.players.find(p => p.id===id);
+const nick = id => { const p = player(id); return p ? p.nickname : 'Un fantasma' };
+const allAnecs = () => [...ANECS, ...S.categories.map(c => ({type:'c_'+c.id, label:c.label, emoji:c.emoji||'🤡', points:c.points, custom:true}))];
+const anecDef = type => allAnecs().find(a => a.type===type);
+
+async function refresh(){
+  try{
+    const [players, events, votes, categories] = await Promise.all(['players','events','votes','categories'].map(t => DB.list(t)));
+    Object.assign(S, {players, events, votes, categories, loaded:true, error:null});
+    if (S.me && !player(S.me)) { S.me = null; LS.set('ddv_me', null) }
+    await settlePending();
+    checkNotifications();
+  }catch(err){
+    console.error(err); S.error = String(err.message || err); S.loaded = true;
+  }
+  render();
+}
+
+/* ---------------- lógica del juicio ---------------- */
+function verdict(e){
+  if (e.status !== 'pending') return e.status;
+  const vs = S.votes.filter(v => v.event_id===e.id);
+  const n = S.players.filter(p => p.id!==e.player_id).length;
+  const yes = vs.filter(v => v.approve).length, no = vs.length - yes;
+  if (n === 0 || yes > n/2) return 'approved';
+  if (no >= n/2) return 'rejected';
+  return 'pending';
+}
+async function settlePending(){
+  const jobs = [];
+  for (const e of S.events) {
+    if (e.status !== 'pending') continue;
+    const v = verdict(e);
+    if (v !== 'pending') { e.status = v; jobs.push(DB.update('events', e.id, {status:v})) }
+  }
+  await Promise.allSettled(jobs);
+}
+
+/* ---------------- clasificaciones ---------------- */
+function playersAt(month){ return S.players.filter(p => monthKey(p.created_at) <= month) }
+function standings(month){
+  const ps = playersAt(month);
+  const rows = ps.map(p => ({p, points:0, drinks:0, anec:0, pending:0}));
+  const by = Object.fromEntries(rows.map(r => [r.p.id, r]));
+  for (const e of S.events) {
+    if (e.month !== month || !by[e.player_id]) continue;
+    const r = by[e.player_id];
+    if (e.status === 'approved') { r.points += e.points; e.kind==='drink' ? r.drinks++ : r.anec++ }
+    else if (e.status === 'pending') r.pending++;
+  }
+  return rows.sort((a,b) => b.points-a.points || b.anec-a.anec || a.p.nickname.localeCompare(b.p.nickname));
+}
+function seasons(){
+  const cm = curMonth();
+  return [...new Set(S.events.map(e => e.month))].filter(m => m < cm).sort().reverse();
+}
+function podiumCount(pid){
+  return seasons().filter(m => standings(m).slice(0,3).some(r => r.p.id===pid && r.points>0)).length;
+}
+
+/* ---------------- medallas ---------------- */
+function medals(month){
+  const ev = S.events.filter(e => e.month===month && e.status==='approved');
+  const ps = playersAt(month);
+  const out = [];
+  const count = (f) => { const c = {}; ev.filter(f).forEach(e => c[e.player_id] = (c[e.player_id]||0)+1); return c };
+  const top = (c, min) => Object.entries(c).filter(([,n]) => n>=min).sort((a,b) => b[1]-a[1]);
+
+  const active = new Set(S.events.filter(e => e.month===month).map(e => e.player_id));
+  ps.filter(p => !active.has(p.id)).forEach(p => out.push({t:'El Fantasma', e:'👻', pid:p.id, d:'Ni está ni se le espera. Cero apariciones este mes.'}));
+
+  top(count(e => { const h = new Date(e.created_at).getHours(); return h>=3 && h<6 }), 2)
+    .slice(0,1).forEach(([pid,n]) => out.push({t:'El Filósofo de las 4AM', e:'🦉', pid, d:`${n} confesiones entre las 3 y las 6. Ahí arregla el mundo.`}));
+
+  const nights = {};
+  ev.forEach(e => { const k = new Date(new Date(e.created_at) - 8*3600e3).toDateString(); if (!nights[k] || nights[k].created_at < e.created_at) nights[k] = e });
+  const last = {}; Object.values(nights).forEach(e => last[e.player_id] = (last[e.player_id]||0)+1);
+  top(last, 2).slice(0,1).forEach(([pid,n]) => out.push({t:'El Que Siempre Dice La Última', e:'🔔', pid, d:`Cerró ${n} noches. «La última y nos vamos», dijo. Mentía.`}));
+
+  ps.forEach(p => { const n = podiumCount(p.id); if (n >= 3) out.push({t:'Reincidente', e:'🔁', pid:p.id, d:`${n} meses en el podio. El juez ya le llama por su nombre.`}) });
+
+  top(count(e => e.type==='ex'), 2).slice(0,1).forEach(([pid,n]) => out.push({t:'El Poeta del Ex', e:'💌', pid, d:`${n} mensajes al ex. Es amor o es el ron.`}));
+  top(count(e => e.type==='raro'), 3).slice(0,1).forEach(([pid,n]) => out.push({t:'El Alquimista', e:'🧪', pid, d:`${n} veces «lo raro». Nadie sabe qué bebió.`}));
+  const chiv = {}; S.events.filter(e => e.month===month && e.reported_by).forEach(e => chiv[e.reported_by] = (chiv[e.reported_by]||0)+1);
+  top(chiv, 3).slice(0,1).forEach(([pid,n]) => out.push({t:'El Chivato', e:'🐀', pid, d:`${n} denuncias. Trabaja para Hacienda, seguro.`}));
+  return out.filter(m => player(m.pid));
+}
+
+/* ---------------- notificaciones ---------------- */
+function checkNotifications(){
+  // Delaciones contra mí
+  if (S.me) {
+    const seen = LS.get('ddv_seen', []);
+    const fresh = S.events.filter(e => e.status==='pending' && e.player_id===S.me && e.reported_by && !seen.includes(e.id));
+    if (fresh.length) { toast('Alguien te ha delatado. El pueblo decidirá.', true, 4200); LS.set('ddv_seen', [...seen, ...fresh.map(e => e.id)].slice(-300)) }
+  }
+  // Cambio de líder
+  const st = standings(curMonth());
+  const lead = st[0] && st[0].points>0 ? st[0].p.id : null;
+  const key = 'ddv_leader_'+curMonth();
+  const prev = LS.get(key, undefined);
+  // prev === undefined → primera visita del mes en este móvil: se apunta sin escándalo
+  if (lead && prev !== undefined && prev !== lead) breaking(st[0].p);
+  LS.set(key, lead);
+}
+
+/* ---------------- efectos ---------------- */
+let toastT;
+function toast(msg, alarm=false, ms=2600){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show'+(alarm?' alarm':'');
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = alarm?'alarm':'', ms);
+}
+function stamp(text, sub){
+  const fx = document.getElementById('stampfx'), b = fx.querySelector('.big');
+  b.innerHTML = `${esc(text)}${sub?`<small>${esc(sub)}</small>`:''}`;
+  fx.classList.remove('show'); void fx.offsetWidth; fx.classList.add('show');
+  const app = document.getElementById('app'); app.classList.remove('shake'); void app.offsetWidth; app.classList.add('shake');
+  if (navigator.vibrate) setTimeout(() => navigator.vibrate(60), 300);
+  setTimeout(() => fx.classList.remove('show'), 1700);
+}
+function breaking(p){
+  const el = document.getElementById('breaking');
+  el.innerHTML = `<div class="lb">ÚLTIMA HORA</div><h1>${esc(up(p.nickname))} toca fondo y lo celebra</h1><p>Nuevo líder de la clasificación. Toca para seguir leyendo</p>`;
+  el.classList.add('show');
+  el.onclick = () => el.classList.remove('show');
+  setTimeout(() => el.classList.remove('show'), 5200);
+}
+
+/* ---------------- vistas ---------------- */
+function masthead(){
+  const me = player(S.me);
+  const n = new Date();
+  return `<header class="mast">
+    <div class="mast-top"><span>${n.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'})}</span>
+      <button class="who ${me?'':'anon'}" data-a="who">${me ? 'Firma: '+esc(me.nickname) : '¿Quién eres? ▸'}</button></div>
+    <div class="logo"><span class="el">EL DIARIO DE LA</span><span class="big">VERGÜEN<em>ZA</em></span></div>
+    <div class="mast-bot"><span>Año I · Nº ${dayOfYear()}</span><span>${DB.remote ? 'Edición en directo' : 'Modo prueba'}</span><span>Precio: tu dignidad</span></div>
+  </header>`;
+}
+function ticker(){
+  const items = S.events.filter(e => e.status==='approved').slice(-10).reverse()
+    .map(e => `${esc(nick(e.player_id))} ${e.kind==='drink' ? 'confiesa '+esc(e.label.toLowerCase()) : '· '+esc(e.label.toLowerCase())} (+${e.points})`);
+  if (!items.length) items.push('Hoy no hay escándalos. Sospechoso', 'La redacción vigila', 'Se aceptan chivatazos');
+  const run = items.map(i => `<span>${i}</span>`).join('');
+  return `<div class="ticker"><b>ÚLTIMA HORA</b><div style="overflow:hidden;flex:1"><div class="run">${run}${run}</div></div></div>`;
+}
+function emptyBlock(title, text, action=''){
+  return `<div class="empty"><span class="stamp red">SIN NOTICIAS</span><h2>${title}</h2><p>${text}</p>${action}</div>`;
+}
+function headSize(text, k=1){ const len = Math.max(4, [...text].length); return `font-size:calc((var(--w) - 32px) * ${Math.min(.36, 1.95/len*k).toFixed(3)})` }
+
+function viewPortada(){
+  if (!S.players.length) return ticker() + emptyBlock('Redacción vacía', 'No hay ni un sinvergüenza dado de alta. Así no se vende un periódico.', '<button class="btn red" data-a="who">FICHAR AL PRIMERO</button>');
+  const m = curMonth(), st = standings(m), mes = monthName(m);
+  let h = ticker();
+  if (!st.some(r => r.points>0)) {
+    h += emptyBlock('Hoy no hay escándalos.', 'Sospechoso. Muy sospechoso. Alguien está mintiendo.', '<button class="btn red" data-a="tab" data-v="confesar">CONFESAR</button>');
+    return h + rankList(st, true);
+  }
+  const L = st[0], second = st[1];
+  const gap = second ? L.points - second.points : L.points;
+  const subs = [
+    `TOCA FONDO CON <span class="hl">${L.points} PUNTOS</span> Y PIDE OTRA`,
+    `<span class="hl">${L.points} PUNTOS</span> DE VERGÜENZA Y NI UNA PIZCA DE ARREPENTIMIENTO`,
+    `ARRASA CON <span class="hl">${L.points} PUNTOS</span>. SU FAMILIA PIDE DISCRECIÓN`,
+  ];
+  const photoEv = S.events.filter(e => e.player_id===L.p.id && e.has_photo && e.status==='approved' && e.month===m).pop();
+  const ini = L.p.nickname.split(/\s+/).map(w => w[0]).join('').slice(0,2);
+  h += `<section>
+    <div class="kick-row"><span class="stamp excl">EXCLUSIVA</span><span class="kicker">El Desastre del Mes · ${esc(mes)}</span></div>
+    <h1 class="mega" style="${headSize(L.p.nickname)}"><span class="q">«</span>${esc(up(L.p.nickname))}<span class="q">»</span></h1>
+    <h2 class="sub">${pick(subs, m+L.p.id)}</h2>
+    <div class="photo-wrap"><div class="photo clip">
+      ${photoEv ? `<img data-photo="${photoEv.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><div class="initials">${esc(up(ini))}</div>`}
+      <div class="band">ÚLTIMA HORA</div></div></div>
+    <div class="photo-cap">${photoEv ? 'Prueba gráfica aportada a la redacción' : 'La redacción no ha conseguido foto. Se esconde.'}</div>
+    <p class="lede"><b>REDACCIÓN.</b> ${esc(L.p.name)}, alias «${esc(L.p.nickname)}», lidera la clasificación de ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.points} puntos de vergüenza: ${L.drinks} ${L.drinks===1?'copa confesada':'copas confesadas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'} que su familia no debe conocer. ${second ? `Le saca ${gap} ${gap===1?'punto':'puntos'} a «${esc(second.p.nickname)}», que ya prepara la remontada.` : 'Nadie le hace sombra. Preocupante.'} Fuentes cercanas aseguran que «no se acuerda de nada». Quedan ${daysLeft()} días para el cierre de edición.</p>
+  </section>`;
+  const md = medals(m);
+  if (md.length) h += `<hr class="rule"><h2 class="sect">Condecoraciones<small>Honores que nadie ha pedido</small></h2><div class="medals-strip">${md.map(medalCard).join('')}</div>`;
+  return h + rankList(st);
+}
+function medalCard(x){ return `<div class="medal"><div class="t">${x.e} ${esc(x.t)}</div><div class="w">${esc(nick(x.pid))}</div><div class="d">${esc(x.d)}</div></div>` }
+function rankList(st, quiet){
+  const showMonje = st.length >= 2;
+  const body = (showMonje ? st.slice(0,-1) : st).map((r,i) => `<li><span class="n">${i+1}</span><span><span class="nm">${esc(r.p.nickname)}</span>${i===0&&r.points>0?'<span class="tag red">Desastre</span>':''}${i>0&&i<3&&r.points>0?'<span class="tag">Podio</span>':''}${r.pending?`<span class="tag">${r.pending} en juicio</span>`:''}<br><span class="rn">${esc(r.p.name)} · ${r.drinks} ${r.drinks===1?'copa':'copas'} · ${r.anec} ${r.anec===1?'anécdota':'anécdotas'}</span></span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
+  const M = st[st.length-1];
+  return `<hr class="rule"><h2 class="sect">La clasificación<small>${quiet ? 'Todos empatados en santidad. Qué asco.' : 'Ordenados de peor a menos peor'}</small></h2>
+    <ol class="rank">${body}</ol>
+    ${showMonje ? `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>Con ${M.points} ${M.points===1?'punto':'puntos'}, es un ejemplo para la juventud y un muermo para el grupo. Se le vio pedir agua. Con gas.</p></div>` : ''}`;
+}
+
+function viewConfesar(){
+  if (!S.players.length || !player(S.me)) return emptyBlock('¿Y tú quién eres?', 'Para confesar hay que dar la cara. Elige tu nombre o date de alta.', '<button class="btn red" data-a="who">DAR LA CARA</button>');
+  const f = S.f;
+  const d = DRINKS.find(x => x.type===f.drink) || DRINKS[0];
+  let h = `<div class="kick-row"><span class="stamp red">CONFESIONARIO</span></div>
+    <h2 class="sect" style="font-size:40px">¿Qué has bebido, criatura?</h2>
+    <div class="grid">${DRINKS.map(x => `<button class="opt ${x.type===f.drink?'on':''}" data-a="drink" data-v="${x.type}"><span class="e">${x.emoji}</span><span class="l">${esc(x.label)}</span><span class="p">+${x.points}</span></button>`).join('')}
+      <div class="opt" style="border-style:dashed;background:transparent"><span class="l">Total</span><span class="p" style="font-size:30px">+${d.points*f.qty}</span></div></div>
+    <div class="confess-row"><div class="qty"><button data-a="qty" data-v="-1">−</button><span>${f.qty}</span><button data-a="qty" data-v="1">+</button></div>
+      <button class="btn red" data-a="confess">CONFESAR</button></div>`;
+
+  const others = S.players.filter(p => p.id!==S.me);
+  const anecs = allAnecs();
+  h += `<hr class="rule"><h2 class="sect" style="font-size:40px">La anécdota<small>Puntúa más que el alcohol. Como debe ser.</small></h2>
+    <div class="tabs2"><button class="${f.mode==='self'?'on':''}" data-a="mode" data-v="self">Me confieso</button><button class="${f.mode==='report'?'on':''}" data-a="mode" data-v="report" ${others.length?'':'disabled'}>Delatar a otro</button></div>
+    ${f.mode==='report' ? `<div class="field"><label>El acusado</label><select data-in="target"><option value="">— Elige a tu víctima —</option>${others.map(p => `<option value="${p.id}" ${f.target===p.id?'selected':''}>${esc(p.nickname)} (${esc(p.name)})</option>`).join('')}</select></div>` : ''}
+    <div class="grid">${anecs.map(a => `<button class="opt ${a.type===f.anec?'on':''}" data-a="anec" data-v="${a.type}"><span class="e">${a.emoji}</span><span class="l">${esc(a.label)}</span><span class="p">+${a.points}</span></button>`).join('')}
+      <button class="opt add" data-a="newcat"><span class="e">✚</span><span class="l">Inventar vergüenza</span></button></div>
+    <div class="field"><label>Los hechos</label><textarea rows="3" maxlength="400" data-in="note" placeholder="Cuenta lo que pasó. Sin adornos. Bueno, con algunos.">${esc(f.note)}</textarea></div>
+    <div class="field"><label>Prueba gráfica (opcional)</label>
+      <label class="file-btn">${f.photo ? `<img src="${f.photo}" alt="">` : '<span style="font-size:28px">📷</span>'}<span>${f.photo ? 'Foto lista. Cambiar' : 'Aportar foto comprometida'}</span><input type="file" accept="image/*" data-in="photo" hidden></label>
+      ${f.photo ? '<button class="link" data-a="nophoto" style="margin-top:6px">Quitar foto</button>' : ''}</div>
+    <button class="btn block ${f.mode==='report'?'':'red'}" data-a="anecdote" ${f.anec && (f.mode==='self' || f.target) ? '' : 'disabled'}>${f.mode==='report' ? 'DELATAR AL PUEBLO' : 'PUBLICAR EN PORTADA'}</button>
+    ${f.mode==='report' ? '<p class="small" style="margin-top:12px"><i>La denuncia queda «pendiente de juicio» hasta que la mayoría del grupo vote. Tu voto de culpable va incluido, chivato.</i></p>' : ''}`;
+
+  const today = new Date().toDateString();
+  const mine = S.events.filter(e => (e.player_id===S.me && !e.reported_by) || e.reported_by===S.me).filter(e => new Date(e.created_at).toDateString()===today).reverse();
+  h += `<hr class="rule"><h2 class="sect">Tus pecados de hoy<small>${mine.length ? 'Puedes retractarte. Quedará feo.' : 'Hoy no hay escándalos. Sospechoso.'}</small></h2>
+    <ul class="sins">${mine.map(e => `<li><span>${e.reported_by ? '🐀 Delatas a <b>'+esc(nick(e.player_id))+'</b>: ' : ''}${esc(e.label)} <b>+${e.points}</b> <i class="small">${ago(e.created_at)}</i></span><button class="x" data-a="retract" data-v="${e.id}">Retractarse</button></li>`).join('')}</ul>`;
+  return h;
+}
+
+function headline(e){
+  const def = anecDef(e.type);
+  const A = '«'+up(nick(e.player_id))+'»';
+  return (def && def.head ? def.head : `{A}: ${up(e.label)}. LA REDACCIÓN NO DA CRÉDITO`).replace('{A}', A);
+}
+function story(e, opts={}){
+  const stampHtml = e.status==='approved' ? '<span class="stamp ok st">CONFIRMADO</span>' : e.status==='pending' ? '<span class="stamp pend st">PENDIENTE DE JUICIO</span>' : '<span class="stamp ink st">ABSUELTO</span>';
+  return `<article class="story">${stampHtml}<div class="cut ${hash(e.id)%2?'clip':'clip2'}"><div>
+    <div class="cat"><span>${esc(e.label)}</span><span>+${e.points} PTS</span></div>
+    <h3>${esc(headline(e))}</h3>
+    ${e.has_photo ? `<div class="ph"><img data-photo="${e.id}" alt="Prueba gráfica"></div>` : ''}
+    ${e.note ? `<p class="note">${esc(e.note)}</p>` : ''}
+    <div class="meta"><span>${e.reported_by ? 'Chivatazo de '+esc(nick(e.reported_by)) : 'Confesión propia'}</span><span>${ago(e.created_at)}</span></div>
+    ${opts.extra || ''}
+  </div></div></article>`;
+}
+function viewMuro(){
+  const list = S.events.filter(e => e.kind==='anecdote' && e.status==='approved').slice().reverse();
+  let h = `<div class="kick-row"><span class="stamp red">MURO DE LA VERGÜENZA</span></div><h2 class="sect" style="font-size:40px">Sucesos<small>Todo lo que el grupo ha confirmado. Sin derecho a réplica.</small></h2>`;
+  if (!list.length) return h + emptyBlock('Hoy no hay escándalos.', 'Sospechoso. O sois muy buena gente o muy buenos mintiendo.', '<button class="btn red" data-a="tab" data-v="confesar">DELATAR A ALGUIEN</button>');
+  return h + list.slice(0,60).map(e => story(e)).join('');
+}
+function viewJuicio(){
+  const pend = S.events.filter(e => e.status==='pending').slice().reverse();
+  const done = S.events.filter(e => e.kind==='anecdote' && e.reported_by && e.status==='rejected').slice(-5).reverse();
+  let h = `<div class="kick-row"><span class="stamp pend">PENDIENTE DE JUICIO</span></div><h2 class="sect" style="font-size:40px">El tribunal del pueblo<small>Mayoría simple. Sin abogados. Sin piedad.</small></h2>`;
+  if (!pend.length) h += emptyBlock('Juzgado vacío.', 'Nadie ha delatado a nadie. Qué grupo más aburrido.');
+  h += pend.map(e => {
+    const vs = S.votes.filter(v => v.event_id===e.id);
+    const n = S.players.filter(p => p.id!==e.player_id).length;
+    const yes = vs.filter(v => v.approve).length, no = vs.length-yes;
+    const mine = vs.find(v => v.voter_id===S.me);
+    const need = Math.floor(n/2)+1;
+    let ctl;
+    if (!S.me) ctl = '<p class="small"><i>Identifícate para votar.</i></p>';
+    else if (e.player_id===S.me) ctl = '<p class="small" style="margin-top:10px"><b>Tú calla, que estás acusado.</b> El pueblo decide.</p>';
+    else ctl = `<div class="votes"><button class="btn sm ${mine&&mine.approve?'red':'ghost'}" data-a="vote" data-v="${e.id}" data-y="1">CULPABLE</button><button class="btn sm ${mine&&!mine.approve?'':'ghost'}" data-a="vote" data-v="${e.id}" data-y="0">INOCENTE</button></div>`;
+    const extra = `<div class="bar"><i class="y" style="width:${n?yes/n*100:0}%"></i><i class="no" style="width:${n?no/n*100:0}%"></i></div>
+      <div class="tally"><span>${yes} culpable</span><span>Hacen falta ${need} de ${n}</span><span>${no} inocente</span></div>${ctl}`;
+    return story(e, {extra});
+  }).join('');
+  if (done.length) h += `<hr class="rule"><h2 class="sect">Absueltos<small>El pueblo ha hablado. Esta vez se libran.</small></h2>` + done.map(e => story(e)).join('');
+  return h;
+}
+function viewHemeroteca(){
+  const m = curMonth();
+  let h = `<div class="kick-row"><span class="stamp red">HEMEROTECA</span></div><h2 class="sect" style="font-size:40px">Archivo de la deshonra<small>Las temporadas se cierran solas a fin de mes. Lo escrito, escrito queda.</small></h2>`;
+  h += `<h2 class="sect" style="margin-top:18px">Galería de condecorados</h2>`;
+  const md = medals(m);
+  h += S.players.length ? `<ul class="plist">${S.players.map(p => {
+      const mine = md.filter(x => x.pid===p.id); const pc = podiumCount(p.id);
+      return `<li style="padding:10px 0;border-bottom:1px solid var(--ink)"><b style="font-family:var(--head);font-size:21px;text-transform:uppercase;font-weight:400">${esc(p.nickname)}</b> <i class="small">${esc(p.name)} · ${pc} ${pc===1?'podio':'podios'} históricos</i>
+        <div class="badges">${mine.length ? mine.map(x => `<span class="badge">${x.e} ${esc(x.t)}</span>`).join('') : '<span class="small"><i>Sin honores. De momento.</i></span>'}</div></li>`}).join('')}</ul>` : '<p><i>Nadie que condecorar.</i></p>';
+  const ss = seasons();
+  h += `<hr class="rule"><h2 class="sect">Temporadas anteriores</h2>`;
+  if (!ss.length) h += `<p class="small"><i>Esta es la primera temporada. La historia se está escribiendo ahora mismo, y no queda bonita.</i></p>`;
+  h += ss.map(s => {
+    const st = standings(s); const W = st[0], M = st.length>1 ? st[st.length-1] : null;
+    return `<details class="season"><summary><span><span class="mo">${esc(monthName(s))}</span><br><span class="wn">${W && W.points ? '«'+esc(W.p.nickname)+'»' : 'Mes en blanco'}</span><br><span class="mk">${W && W.points ? `Desastre del Mes con ${W.points} pts` : ''}${M ? ` · Monje: ${esc(M.p.nickname)}` : ''}</span></span><span class="stamp excl" style="align-self:center">${W && W.points ? 'CAMPEÓN' : '—'}</span></summary>
+      <ol class="rank">${st.map((r,i) => `<li><span class="n">${i+1}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('')}</ol></details>`;
+  }).join('');
+  return h;
+}
+
+function navHtml(){
+  const pendForMe = S.me ? S.events.filter(e => e.status==='pending' && e.player_id!==S.me && !S.votes.some(v => v.event_id===e.id && v.voter_id===S.me)).length : 0;
+  const T = [['portada','Portada'],['muro','Muro'],['confesar','Confesar','cf'],['juicio','Juicio'],['hemeroteca','Archivo']];
+  return T.map(([k,l,c]) => `<button class="${c||''} ${S.tab===k?'on':''}" data-a="tab" data-v="${k}">${l}${k==='juicio'&&pendForMe?`<span class="dot">${pendForMe}</span>`:''}</button>`).join('');
+}
+
+function render(){
+  const ae = document.activeElement;
+  const typing = ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName) && document.getElementById('app').contains(ae);
+  document.getElementById('nav').innerHTML = navHtml();
+  if (typing) return;
+  let body;
+  if (!S.loaded) body = `<div class="empty"><span class="stamp red">IMPRIMIENDO</span><h2>Calentando rotativas…</h2></div>`;
+  else if (S.error) body = emptyBlock('Se ha caído la rotativa', 'No hay manera de hablar con la base de datos. Revisa la conexión en «¿Quién eres?» → Redacción.<br><small>'+esc(S.error.slice(0,160))+'</small>', '<button class="btn red" data-a="who">REVISAR</button>');
+  else body = ({portada:viewPortada, confesar:viewConfesar, muro:viewMuro, juicio:viewJuicio, hemeroteca:viewHemeroteca}[S.tab] || viewPortada)();
+  document.getElementById('app').innerHTML = masthead() + body;
+  hydratePhotos();
+}
+async function hydratePhotos(){
+  for (const img of document.querySelectorAll('img[data-photo]')) {
+    const id = img.dataset.photo;
+    if (!photoCache.has(id)) photoCache.set(id, DB.photo(id).catch(() => null));
+    const src = await photoCache.get(id);
+    if (src) img.src = src; else img.closest('.ph, .photo')?.remove();
+  }
+}
+
+/* ---------------- modales ---------------- */
+function openModal(html){ const m = document.getElementById('modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.classList.add('show') }
+function closeModal(){ const m = document.getElementById('modal'); m.classList.remove('show'); m.innerHTML = '' }
+function whoModal(){
+  const invite = CFG ? location.origin + location.pathname + '#sb=' + encodeURIComponent(CFG.url) + '&k=' + encodeURIComponent(CFG.key) : '';
+  openModal(`<button class="x" data-a="close">✕</button><h2>¿Quién firma?</h2><p class="small"><i>Sin contraseñas. Aquí nos fiamos unos de otros (mal hecho).</i></p>
+    <ul class="plist">${S.players.map(p => `<li><button class="${p.id===S.me?'me':''}" data-a="iam" data-v="${p.id}"><b>${esc(p.nickname)}</b><i>${esc(p.name)}${p.id===S.me?' · eres tú':''}</i></button></li>`).join('') || '<li class="small" style="padding:10px 0"><i>La plantilla está vacía. Sé el primero en caer.</i></li>'}</ul>
+    <h2 style="font-size:24px;margin-top:18px">Fichar sinvergüenza</h2>
+    <form data-f="addplayer"><div class="row2"><div class="field"><label>Nombre</label><input name="name" required maxlength="40" placeholder="Francisco"></div><div class="field"><label>Apodo</label><input name="nickname" required maxlength="24" placeholder="El Torete"></div></div>
+    <button class="btn red block" type="submit">FICHAR Y FIRMAR</button></form>
+    <hr class="rule"><h2 style="font-size:24px">Redacción</h2>
+    ${DB.remote ? `<p class="small">Conectado a la base de datos compartida. Pasa este enlace a la cuadrilla:</p><code>${esc(invite)}</code><button class="btn sm" style="margin-top:10px" data-a="copy" data-v="${esc(invite)}">COPIAR ENLACE</button>`
+      : `<div class="mode-note">Modo prueba: los datos solo viven en este móvil. Conecta Supabase para jugar con el grupo.</div>`}
+    ${CFG && CFG.fixed ? '' : `<form data-f="cfg" style="margin-top:12px"><div class="field"><label>Supabase URL</label><input name="url" value="${esc(CFG?.url||'')}" placeholder="https://xxxx.supabase.co"></div><div class="field"><label>Anon key</label><input name="key" value="${esc(CFG?.key||'')}" placeholder="eyJhbGciOi…"></div>
+      <div class="row2"><button class="btn sm" type="submit">CONECTAR</button>${CFG ? '<button class="btn sm ghost" type="button" data-a="disconnect">MODO PRUEBA</button>' : ''}</div></form>`}`);
+}
+function catModal(){
+  openModal(`<button class="x" data-a="close">✕</button><h2>Inventar vergüenza</h2><p class="small"><i>Nueva categoría para todo el grupo. Úsala con responsabilidad (no).</i></p>
+    <form data-f="addcat"><div class="field"><label>Nombre</label><input name="label" required maxlength="32" placeholder="Bailar encima de la mesa"></div>
+    <div class="row2"><div class="field"><label>Puntos</label><input name="points" type="number" min="1" max="10" value="3" required></div><div class="field"><label>Emoji</label><input name="emoji" maxlength="4" value="🤡"></div></div>
+    <button class="btn red block" type="submit">AÑADIR AL CÓDIGO PENAL</button></form>`);
+}
+
+/* ---------------- acciones ---------------- */
+async function guarded(fn){ try{ await fn() }catch(err){ console.error(err); toast('Error de imprenta: '+String(err.message||err).slice(0,80), true, 4000) } }
+const A = {
+  tab: v => { S.tab = v; LS.set('ddv_tab', v); render(); window.scrollTo({top:0}) },
+  who: () => whoModal(),
+  close: () => closeModal(),
+  iam: v => { S.me = v; LS.set('ddv_me', v); closeModal(); toast('Firmado como «'+nick(v)+'». Ya no hay vuelta atrás.'); render() },
+  drink: v => { S.f.drink = v; render() },
+  qty: v => { S.f.qty = Math.min(10, Math.max(1, S.f.qty + +v)); render() },
+  mode: v => { S.f.mode = v; render() },
+  anec: v => { S.f.anec = v; render() },
+  newcat: () => catModal(),
+  nophoto: () => { S.f.photo = null; render() },
+  copy: v => { navigator.clipboard?.writeText(v).then(() => toast('Enlace copiado. Que corra la voz.'), () => toast('Cópialo a mano, que el móvil no se deja.', true)) },
+  disconnect: () => { LS.set('ddv_cfg', null); CFG = null; DB = localDB(); closeModal(); refresh() },
+  confess: () => guarded(async () => {
+    const d = DRINKS.find(x => x.type===S.f.drink); const n = S.f.qty;
+    const row = {player_id:S.me, kind:'drink', type:d.type, label:d.label, points:d.points, status:'approved', month:curMonth(), has_photo:false};
+    for (let i=0;i<n;i++) await DB.insert('events', row);
+    S.f.qty = 1;
+    toast(`+${d.points*n} · ${pick(DRINK_QUIPS, Date.now())}`);
+    await refresh();
+  }),
+  anecdote: () => guarded(async () => {
+    const f = S.f, def = anecDef(f.anec); if (!def) return;
+    const report = f.mode==='report';
+    const pid = report ? f.target : S.me; if (!pid) return;
+    const row = {player_id:pid, kind:'anecdote', type:def.type, label:def.label, points:def.points, note:f.note.trim() || null,
+      photo:f.photo, has_photo:!!f.photo, reported_by:report ? S.me : null, status:report ? 'pending' : 'approved', month:curMonth()};
+    const saved = await DB.insert('events', row);
+    if (report && saved) await DB.vote({event_id:saved.id, voter_id:S.me, approve:true});
+    Object.assign(S.f, {anec:null, note:'', photo:null, target:''});
+   
+    stamp('EXCLUSIVA', report ? 'Denuncia presentada · Pendiente de juicio' : '+'+def.points+' puntos · Ya es portada');
+    await refresh();
+  }),
+  retract: v => guarded(async () => { if (!confirm('¿Retractarse? La redacción lo anotará como cobardía.')) return; await DB.remove('events', v); toast('Retractado. Cobarde.'); await refresh() }),
+  vote: (v, el) => guarded(async () => {
+    const approve = el.dataset.y === '1';
+    await DB.vote({event_id:v, voter_id:S.me, approve});
+    toast(approve ? 'Culpable. El pueblo te lo agradece.' : 'Inocente. Blandengue.');
+    await refresh();
+    const e = S.events.find(x => x.id===v);
+    if (e && e.status==='approved') stamp('CONFIRMADO', 'El pueblo ha hablado · +'+e.points);
+    else if (e && e.status==='rejected') stamp('ABSUELTO', 'Se libra por esta vez');
+  }),
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-a]'); if (!el) { if (e.target.id==='modal') closeModal(); return }
+  const fn = A[el.dataset.a]; if (fn) { e.preventDefault(); fn(el.dataset.v, el) }
+});
+document.addEventListener('input', e => {
+  const k = e.target.dataset.in; if (!k) return;
+  if (k==='note') S.f.note = e.target.value;
+});
+document.addEventListener('change', e => {
+  const k = e.target.dataset.in; if (!k) return;
+  if (k==='target') { S.f.target = e.target.value; e.target.blur(); render() }
+  if (k==='photo' && e.target.files[0]) shrink(e.target.files[0]).then(src => { S.f.photo = src; render() }).catch(() => toast('Esa foto no hay quien la imprima.', true));
+});
+document.addEventListener('submit', e => {
+  const f = e.target.dataset.f; if (!f) return; e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
+  if (f==='addplayer') guarded(async () => {
+    const name = data.name.trim(), nickname = data.nickname.trim(); if (!name || !nickname) return;
+    if (S.players.some(p => p.nickname.toLowerCase()===nickname.toLowerCase())) return toast('Ese apodo ya está pillado. Echa imaginación.', true);
+    const p = await DB.insert('players', {name, nickname});
+    S.me = p.id; LS.set('ddv_me', p.id); closeModal(); toast('«'+nickname+'» fichado. Bienvenido al lado oscuro.'); await refresh();
+  });
+  if (f==='addcat') guarded(async () => {
+    const c = await DB.insert('categories', {label:data.label.trim(), points:Math.min(10, Math.max(1, +data.points||1)), emoji:(data.emoji||'🤡').trim()});
+    S.f.anec = 'c_'+c.id; closeModal(); toast('Nuevo delito tipificado.'); await refresh();
+  });
+  if (f==='cfg') {
+    const url = data.url.trim(), key = data.key.trim();
+    if (!/^https:\/\//.test(url) || !key) return toast('Eso no parece una conexión de Supabase.', true);
+    CFG = {url, key}; LS.set('ddv_cfg', CFG); DB = remoteDB(CFG); closeModal(); S.loaded = false; render(); refresh();
+  }
+});
+function shrink(file, max=900){
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { const k = Math.min(1, max/Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', .7)) };
+    img.onerror = rej; img.src = url;
+  });
+}
+
+render();
+refresh();
+setInterval(() => { if (!document.hidden) refresh() }, POLL_MS);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
+</script>
+</body>
+</html>
