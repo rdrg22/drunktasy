@@ -43,7 +43,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .logo .el{display:block; line-height:1.15; margin-bottom:14px; font-size:calc((var(--w) - 32px) * .075); letter-spacing:.3em; font-family:var(--label); font-weight:700}
 .logo .big{display:block; font-size:calc((var(--w) - 32px) * .128)}
 .logo .big em{font-style:normal; color:var(--red)}
-.mast-bot{display:flex; justify-content:space-between; font-family:var(--label); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; border-top:1px solid var(--ink); padding:5px 0 6px; gap:8px}
+.mast-bot{display:flex; justify-content:space-between; align-items:center; font-family:var(--label); font-size:11px; text-transform:uppercase; letter-spacing:.05em; border-top:1px solid var(--ink); padding:6px 0; gap:8px}
 .mast-bot span:nth-child(2){color:var(--red); font-weight:700}
 
 /* ---------- TICKER ---------- */
@@ -72,13 +72,13 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .photo-wrap{position:relative; margin:4px 0 12px; filter:drop-shadow(5px 6px 0 rgba(20,18,16,.85))}
 .clip{clip-path:var(--jag1)}
 .clip2{clip-path:var(--jag2)}
-.photo{aspect-ratio:4/3; background:#cfc3a2; position:relative; overflow:hidden; display:grid; place-items:center}
+.photo{aspect-ratio:16/9; background:#cfc3a2; position:relative; overflow:hidden; display:grid; place-items:center}
 .photo img{width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.35) brightness(1.02); mix-blend-mode:multiply}
 .halftone{position:absolute; inset:0; background:radial-gradient(circle at 50% 40%, transparent 0 30%, rgba(0,0,0,.0) 31%), radial-gradient(var(--ink) 1.3px, transparent 1.6px) 0 0/7px 7px; opacity:.28}
-.initials{font-family:var(--head); font-size:150px; line-height:1; color:var(--ink); position:relative; text-shadow:6px 6px 0 var(--red)}
+.initials{font-family:var(--head); font-size:110px; line-height:1; color:var(--ink); position:relative; text-shadow:6px 6px 0 var(--red)}
 .band{position:absolute; top:22px; right:-58px; width:240px; text-align:center; transform:rotate(38deg); background:var(--red); color:#fff; font-family:var(--head); font-size:20px; padding:4px 0; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); letter-spacing:.06em; z-index:2}
 .photo-cap{font-family:var(--label); font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-top:-4px; color:var(--ink2)}
-.lede{columns:2; column-gap:14px; column-rule:1px solid var(--ink); text-align:justify; hyphens:auto; font-size:14.5px; margin:10px 0 0}
+.lede{font-size:15.5px; margin:10px 0 0}
 .lede::first-letter{font-family:var(--head); float:left; font-size:56px; line-height:.8; padding:4px 6px 0 0; color:var(--red)}
 .rule{border:0; border-top:4px double var(--ink); margin:22px 0 12px}
 .sect{font-family:var(--head); font-size:30px; text-transform:uppercase; line-height:.95; margin:0 0 4px}
@@ -180,8 +180,8 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 
 /* ---------- NAV ---------- */
 nav.bottom{position:fixed; left:0; right:0; bottom:0; z-index:40; background:var(--ink); border-top:4px solid var(--red); padding-bottom:env(safe-area-inset-bottom)}
-nav.bottom .in{max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr)}
-nav.bottom button{color:var(--paper); font-family:var(--head); font-size:13.5px; text-transform:uppercase; padding:12px 2px 11px; letter-spacing:.03em; position:relative; line-height:1}
+nav.bottom .in{max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr)}
+nav.bottom button{color:var(--paper); font-family:var(--head); font-size:15px; text-transform:uppercase; padding:12px 2px 11px; letter-spacing:.03em; position:relative; line-height:1}
 nav.bottom button.on{background:var(--paper); color:var(--ink)}
 nav.bottom button.cf{background:var(--red); color:#fff; font-size:15px}
 nav.bottom button.cf.on{background:var(--yellow); color:var(--ink)}
@@ -443,10 +443,6 @@ function medals(month){
 
   ps.forEach(p => { const n = podiumCount(p.id); if (n >= 3) out.push({t:'Reincidente', e:'🔁', pid:p.id, d:`${n} meses en el podio. El juez ya le llama por su nombre.`}) });
 
-  top(count(e => e.type==='ex'), 2).slice(0,1).forEach(([pid,n]) => out.push({t:'El Poeta del Ex', e:'💌', pid, d:`${n} mensajes al ex. Es amor o es el ron.`}));
-  top(count(e => e.type==='raro'), 3).slice(0,1).forEach(([pid,n]) => out.push({t:'El Alquimista', e:'🧪', pid, d:`${n} veces «lo raro». Nadie sabe qué bebió.`}));
-  const chiv = {}; S.events.filter(e => e.month===month && e.reported_by).forEach(e => chiv[e.reported_by] = (chiv[e.reported_by]||0)+1);
-  top(chiv, 3).slice(0,1).forEach(([pid,n]) => out.push({t:'El Chivato', e:'🐀', pid, d:`${n} denuncias. Trabaja para Hacienda, seguro.`}));
   return out.filter(m => player(m.pid));
 }
 
@@ -494,12 +490,10 @@ function breaking(p){
 /* ---------------- vistas ---------------- */
 function masthead(){
   const me = player(S.me);
-  const n = new Date();
   return `<header class="mast">
-    <div class="mast-top"><span>${n.toLocaleDateString('es-ES',{weekday:'long', day:'numeric', month:'long'})}</span>
-      <button class="who ${me?'':'anon'}" data-a="who">${me ? 'Firma: '+esc(me.nickname) : '¿Quién eres? ▸'}</button></div>
     <div class="logo"><span class="el">EL DIARIO DE LA</span><span class="big">VERGÜEN<em>ZA</em></span></div>
-    <div class="mast-bot"><span>Año I · Nº ${dayOfYear()}</span><span>${DB.remote ? 'Edición en directo' : 'Modo prueba'}</span><span>Precio: tu dignidad</span></div>
+    <div class="mast-bot"><span>Nº ${dayOfYear()} · ${DB.remote ? 'En directo' : 'Modo prueba'}</span>
+      <button class="who ${me?'':'anon'}" data-a="who">${me ? esc(me.nickname) : '¿Quién eres? ▸'}</button></div>
   </header>`;
 }
 function ticker(){
@@ -538,55 +532,48 @@ function viewPortada(){
     <div class="photo-wrap"><div class="photo clip">
       ${photoEv ? `<img data-photo="${photoEv.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><div class="initials">${esc(up(ini))}</div>`}
       <div class="band">ÚLTIMA HORA</div></div></div>
-    <div class="photo-cap">${photoEv ? 'Prueba gráfica aportada a la redacción' : 'La redacción no ha conseguido foto. Se esconde.'}</div>
-    <p class="lede"><b>REDACCIÓN.</b> ${esc(L.p.name)}, alias «${esc(L.p.nickname)}», lidera la clasificación de ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.points} puntos de vergüenza: ${L.drinks} ${L.drinks===1?'copa confesada':'copas confesadas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'} que su familia no debe conocer. ${second ? `Le saca ${gap} ${gap===1?'punto':'puntos'} a «${esc(second.p.nickname)}», que ya prepara la remontada.` : 'Nadie le hace sombra. Preocupante.'} Fuentes cercanas aseguran que «no se acuerda de nada». Quedan ${daysLeft()} días para el cierre de edición.</p>
+    <p class="lede"><b>${esc(L.p.name)}</b> lidera ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.drinks} ${L.drinks===1?'copa':'copas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'}. ${second ? `Le saca ${gap} a «${esc(second.p.nickname)}».` : 'Nadie le hace sombra.'} Cierre de edición en ${daysLeft()} días.</p>
   </section>`;
-  const md = medals(m);
-  if (md.length) h += `<hr class="rule"><h2 class="sect">Condecoraciones<small>Honores que nadie ha pedido</small></h2><div class="medals-strip">${md.map(medalCard).join('')}</div>`;
   return h + rankList(st);
 }
 function medalCard(x){ return `<div class="medal"><div class="t">${x.e} ${esc(x.t)}</div><div class="w">${esc(nick(x.pid))}</div><div class="d">${esc(x.d)}</div></div>` }
 function rankList(st, quiet){
   const showMonje = st.length >= 2;
-  const body = (showMonje ? st.slice(0,-1) : st).map((r,i) => `<li><span class="n">${i+1}</span><span><span class="nm">${esc(r.p.nickname)}</span>${i===0&&r.points>0?'<span class="tag red">Desastre</span>':''}${i>0&&i<3&&r.points>0?'<span class="tag">Podio</span>':''}${r.pending?`<span class="tag">${r.pending} en juicio</span>`:''}<br><span class="rn">${esc(r.p.name)} · ${r.drinks} ${r.drinks===1?'copa':'copas'} · ${r.anec} ${r.anec===1?'anécdota':'anécdotas'}</span></span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
+  const body = (showMonje ? st.slice(0,-1) : st).map((r,i) => `<li><span class="n">${i+1}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
   const M = st[st.length-1];
-  return `<hr class="rule"><h2 class="sect">La clasificación<small>${quiet ? 'Todos empatados en santidad. Qué asco.' : 'Ordenados de peor a menos peor'}</small></h2>
+  return `<hr class="rule"><h2 class="sect">La clasificación${quiet ? '<small>Todos empatados en santidad. Qué asco.</small>' : ''}</h2>
     <ol class="rank">${body}</ol>
-    ${showMonje ? `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>Con ${M.points} ${M.points===1?'punto':'puntos'}, es un ejemplo para la juventud y un muermo para el grupo. Se le vio pedir agua. Con gas.</p></div>` : ''}`;
+    ${showMonje ? `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>${M.points} ${M.points===1?'punto':'puntos'}. Se le vio pedir agua. Con gas.</p></div>` : ''}`;
 }
 
 function viewConfesar(){
-  if (!S.players.length || !player(S.me)) return emptyBlock('¿Y tú quién eres?', 'Para confesar hay que dar la cara. Elige tu nombre o date de alta.', '<button class="btn red" data-a="who">DAR LA CARA</button>');
+  if (!S.players.length || !player(S.me)) return emptyBlock('¿Y tú quién eres?', 'Para confesar hay que dar la cara.', '<button class="btn red" data-a="who">DAR LA CARA</button>');
   const f = S.f;
-  const d = DRINKS.find(x => x.type===f.drink) || DRINKS[0];
-  let h = `<div class="kick-row"><span class="stamp red">CONFESIONARIO</span></div>
-    <h2 class="sect" style="font-size:40px">¿Qué has bebido, criatura?</h2>
-    <div class="grid">${DRINKS.map(x => `<button class="opt ${x.type===f.drink?'on':''}" data-a="drink" data-v="${x.type}"><span class="e">${x.emoji}</span><span class="l">${esc(x.label)}</span><span class="p">+${x.points}</span></button>`).join('')}
-      <div class="opt" style="border-style:dashed;background:transparent"><span class="l">Total</span><span class="p" style="font-size:30px">+${d.points*f.qty}</span></div></div>
+  let h = `<h2 class="sect" style="font-size:40px;margin-top:20px">¿Qué has bebido?</h2>
+    <div class="grid">${DRINKS.map(x => `<button class="opt ${x.type===f.drink?'on':''}" data-a="drink" data-v="${x.type}"><span class="e">${x.emoji}</span><span class="l">${esc(x.label)}</span><span class="p">+${x.points}</span></button>`).join('')}</div>
     <div class="confess-row"><div class="qty"><button data-a="qty" data-v="-1">−</button><span>${f.qty}</span><button data-a="qty" data-v="1">+</button></div>
-      <button class="btn red" data-a="confess">CONFESAR</button></div>`;
-
-  const others = S.players.filter(p => p.id!==S.me);
-  const anecs = allAnecs();
-  h += `<hr class="rule"><h2 class="sect" style="font-size:40px">La anécdota<small>Puntúa más que el alcohol. Como debe ser.</small></h2>
-    <div class="tabs2"><button class="${f.mode==='self'?'on':''}" data-a="mode" data-v="self">Me confieso</button><button class="${f.mode==='report'?'on':''}" data-a="mode" data-v="report" ${others.length?'':'disabled'}>Delatar a otro</button></div>
-    ${f.mode==='report' ? `<div class="field"><label>El acusado</label><select data-in="target"><option value="">— Elige a tu víctima —</option>${others.map(p => `<option value="${p.id}" ${f.target===p.id?'selected':''}>${esc(p.nickname)} (${esc(p.name)})</option>`).join('')}</select></div>` : ''}
-    <div class="grid">${anecs.map(a => `<button class="opt ${a.type===f.anec?'on':''}" data-a="anec" data-v="${a.type}"><span class="e">${a.emoji}</span><span class="l">${esc(a.label)}</span><span class="p">+${a.points}</span></button>`).join('')}
-      <button class="opt add" data-a="newcat"><span class="e">✚</span><span class="l">Inventar vergüenza</span></button></div>
-    <div class="field"><label>Los hechos</label><textarea rows="3" maxlength="400" data-in="note" placeholder="Cuenta lo que pasó. Sin adornos. Bueno, con algunos.">${esc(f.note)}</textarea></div>
-    <div class="field"><label>Prueba gráfica (opcional)</label>
-      <label class="file-btn">${f.photo ? `<img src="${f.photo}" alt="">` : '<span style="font-size:28px">📷</span>'}<span>${f.photo ? 'Foto lista. Cambiar' : 'Aportar foto comprometida'}</span><input type="file" accept="image/*" data-in="photo" hidden></label>
-      ${f.photo ? '<button class="link" data-a="nophoto" style="margin-top:6px">Quitar foto</button>' : ''}</div>
-    <button class="btn block ${f.mode==='report'?'':'red'}" data-a="anecdote" ${f.anec && (f.mode==='self' || f.target) ? '' : 'disabled'}>${f.mode==='report' ? 'DELATAR AL PUEBLO' : 'PUBLICAR EN PORTADA'}</button>
-    ${f.mode==='report' ? '<p class="small" style="margin-top:12px"><i>La denuncia queda «pendiente de juicio» hasta que la mayoría del grupo vote. Tu voto de culpable va incluido, chivato.</i></p>' : ''}`;
-
+      <button class="btn red" data-a="confess">CONFESAR</button></div>
+    <hr class="rule">
+    <button class="btn block" data-a="anecmodal">✚ CONTAR UNA ANÉCDOTA</button>
+    <p class="small" style="text-align:center;margin-top:10px"><i>Tuya o de otro. Puntúan más que el alcohol.</i></p>`;
   const today = new Date().toDateString();
   const mine = S.events.filter(e => (e.player_id===S.me && !e.reported_by) || e.reported_by===S.me).filter(e => new Date(e.created_at).toDateString()===today).reverse();
-  h += `<hr class="rule"><h2 class="sect">Tus pecados de hoy<small>${mine.length ? 'Puedes retractarte. Quedará feo.' : 'Hoy no hay escándalos. Sospechoso.'}</small></h2>
-    <ul class="sins">${mine.map(e => `<li><span>${e.reported_by ? '🐀 Delatas a <b>'+esc(nick(e.player_id))+'</b>: ' : ''}${esc(e.label)} <b>+${e.points}</b> <i class="small">${ago(e.created_at)}</i></span><button class="x" data-a="retract" data-v="${e.id}">Retractarse</button></li>`).join('')}</ul>`;
+  if (mine.length) h += `<hr class="rule"><h2 class="sect" style="font-size:24px">Hoy llevas</h2>
+    <ul class="sins">${mine.map(e => `<li><span>${e.reported_by ? '🐀 '+esc(nick(e.player_id))+': ' : ''}${esc(e.label)} <b>+${e.points}</b></span><button class="x" data-a="retract" data-v="${e.id}">Retractarse</button></li>`).join('')}</ul>`;
   return h;
 }
-
+function anecModal(){
+  const f = S.f, others = S.players.filter(p => p.id!==S.me), report = f.mode==='report';
+  openModal(`<button class="x" data-a="close">✕</button><h2>La anécdota</h2>
+    <div class="tabs2"><button class="${!report?'on':''}" data-a="mode" data-v="self">Me confieso</button><button class="${report?'on':''}" data-a="mode" data-v="report" ${others.length?'':'disabled'}>Delatar</button></div>
+    ${report ? `<div class="field"><select data-in="target"><option value="">— ¿A quién delatas? —</option>${others.map(p => `<option value="${p.id}" ${f.target===p.id?'selected':''}>${esc(p.nickname)}</option>`).join('')}</select></div>` : ''}
+    <div class="grid">${allAnecs().map(a => `<button class="opt ${a.type===f.anec?'on':''}" data-a="anec" data-v="${a.type}"><span class="e">${a.emoji}</span><span class="l">${esc(a.label)}</span><span class="p">+${a.points}</span></button>`).join('')}
+      <button class="opt add" data-a="newcat"><span class="e">✚</span><span class="l">Otra</span></button></div>
+    <div class="field"><textarea rows="2" maxlength="400" data-in="note" placeholder="Qué pasó (opcional)">${esc(f.note)}</textarea></div>
+    <label class="file-btn">${f.photo ? `<img src="${f.photo}" alt="">` : '<span style="font-size:24px">📷</span>'}<span>${f.photo ? 'Cambiar foto' : 'Foto (opcional)'}</span><input type="file" accept="image/*" data-in="photo" hidden></label>
+    <button class="btn block red" style="margin-top:14px" data-a="anecdote" ${f.anec && (!report || f.target) ? '' : 'disabled'}>${report ? 'DELATAR' : 'PUBLICAR'}</button>
+    ${report ? '<p class="small" style="margin-top:10px"><i>Queda pendiente de juicio hasta que vote la mayoría.</i></p>' : ''}`);
+}
 function headline(e){
   const def = anecDef(e.type);
   const A = '«'+up(nick(e.player_id))+'»';
@@ -604,16 +591,10 @@ function story(e, opts={}){
   </div></div></article>`;
 }
 function viewMuro(){
-  const list = S.events.filter(e => e.kind==='anecdote' && e.status==='approved').slice().reverse();
-  let h = `<div class="kick-row"><span class="stamp red">MURO DE LA VERGÜENZA</span></div><h2 class="sect" style="font-size:40px">Sucesos<small>Todo lo que el grupo ha confirmado. Sin derecho a réplica.</small></h2>`;
-  if (!list.length) return h + emptyBlock('Hoy no hay escándalos.', 'Sospechoso. O sois muy buena gente o muy buenos mintiendo.', '<button class="btn red" data-a="tab" data-v="confesar">DELATAR A ALGUIEN</button>');
-  return h + list.slice(0,60).map(e => story(e)).join('');
-}
-function viewJuicio(){
   const pend = S.events.filter(e => e.status==='pending').slice().reverse();
-  const done = S.events.filter(e => e.kind==='anecdote' && e.reported_by && e.status==='rejected').slice(-5).reverse();
-  let h = `<div class="kick-row"><span class="stamp pend">PENDIENTE DE JUICIO</span></div><h2 class="sect" style="font-size:40px">El tribunal del pueblo<small>Mayoría simple. Sin abogados. Sin piedad.</small></h2>`;
-  if (!pend.length) h += emptyBlock('Juzgado vacío.', 'Nadie ha delatado a nadie. Qué grupo más aburrido.');
+  const ok = S.events.filter(e => e.kind==='anecdote' && e.status==='approved').slice().reverse();
+  let h = '';
+  if (pend.length) h += `<h2 class="sect" style="font-size:36px;margin-top:20px">En juicio<small>Mayoría simple. Sin abogados.</small></h2>`;
   h += pend.map(e => {
     const vs = S.votes.filter(v => v.event_id===e.id);
     const n = S.players.filter(p => p.id!==e.player_id).length;
@@ -628,12 +609,13 @@ function viewJuicio(){
       <div class="tally"><span>${yes} culpable</span><span>Hacen falta ${need} de ${n}</span><span>${no} inocente</span></div>${ctl}`;
     return story(e, {extra});
   }).join('');
-  if (done.length) h += `<hr class="rule"><h2 class="sect">Absueltos<small>El pueblo ha hablado. Esta vez se libran.</small></h2>` + done.map(e => story(e)).join('');
-  return h;
+  h += `${pend.length ? '<hr class="rule">' : ''}<h2 class="sect" style="font-size:36px;margin-top:20px">Muro de la vergüenza</h2>`;
+  if (!ok.length) h += emptyBlock('Hoy no hay escándalos.', 'Sospechoso.', '<button class="btn red" data-a="tab" data-v="confesar">CONFESAR</button>');
+  return h + ok.slice(0,60).map(e => story(e)).join('');
 }
 function viewHemeroteca(){
   const m = curMonth();
-  let h = `<div class="kick-row"><span class="stamp red">HEMEROTECA</span></div><h2 class="sect" style="font-size:40px">Archivo de la deshonra<small>Las temporadas se cierran solas a fin de mes. Lo escrito, escrito queda.</small></h2>`;
+  let h = `<div style="height:12px"></div><h2 class="sect" style="font-size:40px">Archivo<small>Cada mes, temporada nueva. Lo escrito, escrito queda.</small></h2>`;
   h += `<h2 class="sect" style="margin-top:18px">Galería de condecorados</h2>`;
   const md = medals(m);
   h += S.players.length ? `<ul class="plist">${S.players.map(p => {
@@ -653,8 +635,8 @@ function viewHemeroteca(){
 
 function navHtml(){
   const pendForMe = S.me ? S.events.filter(e => e.status==='pending' && e.player_id!==S.me && !S.votes.some(v => v.event_id===e.id && v.voter_id===S.me)).length : 0;
-  const T = [['portada','Portada'],['muro','Muro'],['confesar','Confesar','cf'],['juicio','Juicio'],['hemeroteca','Archivo']];
-  return T.map(([k,l,c]) => `<button class="${c||''} ${S.tab===k?'on':''}" data-a="tab" data-v="${k}">${l}${k==='juicio'&&pendForMe?`<span class="dot">${pendForMe}</span>`:''}</button>`).join('');
+  const T = [['portada','Portada'],['confesar','Confesar','cf'],['muro','Muro'],['hemeroteca','Archivo']];
+  return T.map(([k,l,c]) => `<button class="${c||''} ${S.tab===k?'on':''}" data-a="tab" data-v="${k}">${l}${k==='muro'&&pendForMe?`<span class="dot">${pendForMe}</span>`:''}</button>`).join('');
 }
 
 function render(){
@@ -665,7 +647,7 @@ function render(){
   let body;
   if (!S.loaded) body = `<div class="empty"><span class="stamp red">IMPRIMIENDO</span><h2>Calentando rotativas…</h2></div>`;
   else if (S.error) body = emptyBlock('Se ha caído la rotativa', 'No hay manera de hablar con la base de datos. Revisa la conexión en «¿Quién eres?» → Redacción.<br><small>'+esc(S.error.slice(0,160))+'</small>', '<button class="btn red" data-a="who">REVISAR</button>');
-  else body = ({portada:viewPortada, confesar:viewConfesar, muro:viewMuro, juicio:viewJuicio, hemeroteca:viewHemeroteca}[S.tab] || viewPortada)();
+  else body = ({portada:viewPortada, confesar:viewConfesar, muro:viewMuro, hemeroteca:viewHemeroteca}[S.tab] || viewPortada)();
   document.getElementById('app').innerHTML = masthead() + body;
   hydratePhotos();
 }
@@ -695,7 +677,7 @@ function whoModal(){
       <div class="row2"><button class="btn sm" type="submit">CONECTAR</button>${CFG ? '<button class="btn sm ghost" type="button" data-a="disconnect">MODO PRUEBA</button>' : ''}</div></form>`}`);
 }
 function catModal(){
-  openModal(`<button class="x" data-a="close">✕</button><h2>Inventar vergüenza</h2><p class="small"><i>Nueva categoría para todo el grupo. Úsala con responsabilidad (no).</i></p>
+  openModal(`<button class="x" data-a="anecmodal">✕</button><h2>Inventar vergüenza</h2><p class="small"><i>Nueva categoría para todo el grupo. Úsala con responsabilidad (no).</i></p>
     <form data-f="addcat"><div class="field"><label>Nombre</label><input name="label" required maxlength="32" placeholder="Bailar encima de la mesa"></div>
     <div class="row2"><div class="field"><label>Puntos</label><input name="points" type="number" min="1" max="10" value="3" required></div><div class="field"><label>Emoji</label><input name="emoji" maxlength="4" value="🤡"></div></div>
     <button class="btn red block" type="submit">AÑADIR AL CÓDIGO PENAL</button></form>`);
@@ -704,16 +686,16 @@ function catModal(){
 /* ---------------- acciones ---------------- */
 async function guarded(fn){ try{ await fn() }catch(err){ console.error(err); toast('Error de imprenta: '+String(err.message||err).slice(0,80), true, 4000) } }
 const A = {
-  tab: v => { S.tab = v; LS.set('ddv_tab', v); render(); window.scrollTo({top:0}) },
+  tab: v => { S.tab = v==='juicio' ? 'muro' : v; LS.set('ddv_tab', S.tab); render(); window.scrollTo({top:0}) },
   who: () => whoModal(),
   close: () => closeModal(),
   iam: v => { S.me = v; LS.set('ddv_me', v); closeModal(); toast('Firmado como «'+nick(v)+'». Ya no hay vuelta atrás.'); render() },
   drink: v => { S.f.drink = v; render() },
+  anecmodal: () => anecModal(),
   qty: v => { S.f.qty = Math.min(10, Math.max(1, S.f.qty + +v)); render() },
-  mode: v => { S.f.mode = v; render() },
-  anec: v => { S.f.anec = v; render() },
+  mode: v => { S.f.mode = v; anecModal() },
+  anec: v => { S.f.anec = v; anecModal() },
   newcat: () => catModal(),
-  nophoto: () => { S.f.photo = null; render() },
   copy: v => { navigator.clipboard?.writeText(v).then(() => toast('Enlace copiado. Que corra la voz.'), () => toast('Cópialo a mano, que el móvil no se deja.', true)) },
   disconnect: () => { LS.set('ddv_cfg', null); CFG = null; DB = localDB(); closeModal(); refresh() },
   confess: () => guarded(async () => {
@@ -733,6 +715,7 @@ const A = {
     const saved = await DB.insert('events', row);
     if (report && saved) await DB.vote({event_id:saved.id, voter_id:S.me, approve:true});
     Object.assign(S.f, {anec:null, note:'', photo:null, target:''});
+    closeModal();
    
     stamp('EXCLUSIVA', report ? 'Denuncia presentada · Pendiente de juicio' : '+'+def.points+' puntos · Ya es portada');
     await refresh();
@@ -758,8 +741,8 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const k = e.target.dataset.in; if (!k) return;
-  if (k==='target') { S.f.target = e.target.value; e.target.blur(); render() }
-  if (k==='photo' && e.target.files[0]) shrink(e.target.files[0]).then(src => { S.f.photo = src; render() }).catch(() => toast('Esa foto no hay quien la imprima.', true));
+  if (k==='target') { S.f.target = e.target.value; anecModal() }
+  if (k==='photo' && e.target.files[0]) shrink(e.target.files[0]).then(src => { S.f.photo = src; anecModal() }).catch(() => toast('Esa foto no hay quien la imprima.', true));
 });
 document.addEventListener('submit', e => {
   const f = e.target.dataset.f; if (!f) return; e.preventDefault();
@@ -772,7 +755,7 @@ document.addEventListener('submit', e => {
   });
   if (f==='addcat') guarded(async () => {
     const c = await DB.insert('categories', {label:data.label.trim(), points:Math.min(10, Math.max(1, +data.points||1)), emoji:(data.emoji||'🤡').trim()});
-    S.f.anec = 'c_'+c.id; closeModal(); toast('Nuevo delito tipificado.'); await refresh();
+    S.f.anec = 'c_'+c.id; toast('Nuevo delito tipificado.'); await refresh(); anecModal();
   });
   if (f==='cfg') {
     const url = data.url.trim(), key = data.key.trim();
