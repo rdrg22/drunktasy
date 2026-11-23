@@ -35,6 +35,7 @@ Sin Supabase funciona en **modo prueba**: los datos se quedan en ese navegador.
 - Confesar una anécdota propia cuenta al momento. Delatar a otro la deja **PENDIENTE DE JUICIO**: el chivato vota culpable de oficio y gana la mayoría simple del resto del grupo (sin contar al acusado).
 - La temporada es el mes natural. La clasificación tiene dos vistas: *Este mes* (se reinicia sola; los meses pasados quedan en *Archivo*) e *Histórico* (todo lo acumulado).
 - Medallas: El Fantasma (cero actividad en el mes), El Filósofo de las 4AM (2+ registros entre las 3 y las 6), El Que Siempre Dice La Última (cierra 2+ noches) y Reincidente (3 meses en el podio).
-- «Retractarse» pide doble toque: el primero avisa, el segundo borra.
+- Confesar una copa es un toque (con «Deshacer» 5 s en el aviso). «Retractarse» pide doble toque: el primero avisa, el segundo borra.
+- Modo noche: pensada para usarse de madrugada y con copas (fondo oscuro, botones de 48 px o más, pocos efectos).
 
 ⚠️ No hay contraseñas: quien tenga el enlace puede leer y escribir. No lo pongas en un grupo de 200 personas.
