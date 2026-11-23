@@ -38,6 +38,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .mast-top{display:flex; justify-content:space-between; align-items:center; font-family:var(--label); font-size:11px; letter-spacing:.08em; text-transform:uppercase; border-bottom:1px solid var(--ink); padding-bottom:6px}
 .who{background:var(--ink); color:var(--paper); padding:4px 8px; font-family:var(--label); font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; max-width:55%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .who.anon{background:var(--red); animation:blink 1.2s steps(2) infinite}
+.grp{font-family:var(--label); font-weight:700; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--red); border-bottom:2px solid var(--red); padding:2px 0; max-width:45%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:left}
 @keyframes blink{50%{opacity:.55}}
 .logo{font-family:var(--head); text-transform:uppercase; line-height:.86; margin:10px 0 4px; letter-spacing:-.01em}
 .logo .el{display:block; line-height:1.15; margin-bottom:14px; font-size:calc((var(--w) - 32px) * .075); letter-spacing:.3em; font-family:var(--label); font-weight:700}
@@ -122,6 +123,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 
 /* ---------- CONFESAR ---------- */
 .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0}
+.grid.g2{grid-template-columns:repeat(2,1fr)}
 .opt{border:2px solid var(--ink); background:#fffaf0; padding:10px 4px 8px; text-align:center; position:relative; min-height:96px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px}
 .opt .e{font-size:30px; line-height:1; filter:grayscale(.2)}
 .opt .l{font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12.5px; line-height:1.05}
@@ -137,6 +139,9 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .tabs2{display:grid; grid-template-columns:1fr 1fr; border:3px solid var(--ink); margin:12px 0}
 .tabs2 button{font-family:var(--head); font-size:18px; text-transform:uppercase; padding:10px 4px 8px}
 .tabs2 button.on{background:var(--red); color:#fff}
+.tabs2.rk{margin:10px 0 0; border-width:2px}
+.tabs2.rk button{font-size:15px; padding:7px 4px 5px}
+.tabs2.rk button.on{background:var(--ink); color:var(--yellow)}
 .field{margin:10px 0}
 .field label{display:block; font-family:var(--label); font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:.06em; margin-bottom:4px}
 .file-btn{display:flex; align-items:center; gap:10px; border:2px dashed var(--ink); padding:10px; background:rgba(255,255,255,.3); font-family:var(--label); text-transform:uppercase; font-size:13px; font-weight:700}
@@ -256,9 +261,8 @@ const POLL_MS = 8000;
 const DRINKS = [
   {type:'cana',    label:'Caña / cerveza', emoji:'🍺', points:1},
   {type:'vino',    label:'Vino',           emoji:'🍷', points:1},
-  {type:'cubata',  label:'Cubata',         emoji:'🍹', points:2},
-  {type:'chupito', label:'Chupito',        emoji:'🥃', points:2},
-  {type:'raro',    label:'«Lo raro»',      emoji:'🧪', points:3},
+  {type:'cubata',  label:'Cubata',         emoji:'🍹', points:5},
+  {type:'chupito', label:'Chupito',        emoji:'🥃', points:3},
 ];
 const ANECS = [
   {type:'audio', label:'Audio vergonzoso',        emoji:'🎙️', points:3, head:'{A} MANDA UN AUDIO DE CUATRO MINUTOS QUE NO DEBERÍA EXISTIR'},
@@ -314,12 +318,12 @@ document.documentElement.style.setProperty('--jag1', jag(7));
 document.documentElement.style.setProperty('--jag2', jag(4242));
 
 /* ---------------- almacenamiento ---------------- */
+const HASH = new URLSearchParams(location.hash.slice(1));
+const JOIN_CODE = (HASH.get('g') || '').trim().toLowerCase();   // enlace de invitación a un grupo: #g=CODIGO
+if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 function resolveConfig(){
-  const h = new URLSearchParams(location.hash.slice(1));
-  if (h.get('sb') && h.get('k')) {
-    LS.set('ddv_cfg', {url:h.get('sb'), key:h.get('k')});
-    history.replaceState(null, '', location.pathname + location.search);
-  }
+  const h = HASH;
+  if (h.get('sb') && h.get('k')) LS.set('ddv_cfg', {url:h.get('sb'), key:h.get('k')});
   if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) return {url:CONFIG.SUPABASE_URL, key:CONFIG.SUPABASE_ANON_KEY, fixed:true};
   return LS.get('ddv_cfg', null);
 }
@@ -334,7 +338,8 @@ function remoteDB(cfg){
   const T = t => 'ddv_'+t;
   return {
     remote:true,
-    list: (t) => req(`${T(t)}?select=${t==='events'?EVENT_COLS:'*'}&order=created_at.asc`),
+    list: (t, gid) => req(`${T(t)}?select=${t==='events'?EVENT_COLS:'*'}&group_id=eq.${encodeURIComponent(gid)}&order=created_at.asc`),
+    find: (t, field, value) => req(`${T(t)}?${field}=eq.${encodeURIComponent(value)}&select=${t==='events'?EVENT_COLS:'*'}`),
     insert: (t,row) => req(T(t), {method:'POST', headers:{Prefer:'return=representation'}, body:JSON.stringify(row)}).then(r=>r[0]),
     update: (t,id,patch) => req(`${T(t)}?id=eq.${encodeURIComponent(id)}`, {method:'PATCH', body:JSON.stringify(patch)}),
     remove: (t,id) => req(`${T(t)}?id=eq.${encodeURIComponent(id)}`, {method:'DELETE'}),
@@ -343,11 +348,13 @@ function remoteDB(cfg){
   };
 }
 function localDB(){
-  const load = () => LS.get('ddv_local', {players:[], events:[], votes:[], categories:[]});
+  const load = () => ({groups:[], players:[], events:[], votes:[], categories:[], ...LS.get('ddv_local', {})});
   const save = db => LS.set('ddv_local', db);
+  const strip = rows => rows.map(({photo, ...r}) => r);
   return {
     remote:false,
-    async list(t){ const rows = load()[t] || []; return t==='events' ? rows.map(({photo, ...r}) => r) : rows },
+    async list(t, gid){ const rows = (load()[t] || []).filter(r => r.group_id===gid); return t==='events' ? strip(rows) : rows },
+    async find(t, field, value){ const rows = (load()[t] || []).filter(r => r[field]===value); return t==='events' ? strip(rows) : rows },
     async insert(t,row){ const db = load(); const r = {id:uid(), created_at:new Date().toISOString(), ...row}; db[t].push(r); save(db); return t==='events' ? (({photo,...x})=>x)(r) : r },
     async update(t,id,patch){ const db = load(); db[t] = db[t].map(r => r.id===id ? {...r, ...patch} : r); save(db) },
     async remove(t,id){ const db = load(); db[t] = db[t].filter(r => r.id!==id); if (t==='events') db.votes = db.votes.filter(v => v.event_id!==id); save(db) },
@@ -361,10 +368,28 @@ let DB = CFG ? remoteDB(CFG) : localDB();
 /* ---------------- estado ---------------- */
 const S = {
   players:[], events:[], votes:[], categories:[],
-  me: LS.get('ddv_me', null), tab: LS.get('ddv_tab', 'portada'),
+  groups: LS.get('ddv_groups', []),           // grupos de este móvil: [{id, name, code}]
+  group: LS.get('ddv_group', null),           // id del grupo abierto
+  me: null, tab: LS.get('ddv_tab', 'portada'), rk: LS.get('ddv_rk', 'mes'),
   loaded:false, error:null,
   f: {drink:'cana', qty:1, mode:'self', anec:null, target:'', note:'', photo:null},
 };
+// Quién eres va por grupo: en cada cuadrilla puedes tener un apodo distinto
+const meMap = () => LS.get('ddv_me_g', {});
+function setMe(pid){ const m = meMap(); m[S.group] = pid; LS.set('ddv_me_g', m); S.me = pid }
+const curGroup = () => S.groups.find(g => g.id===S.group);
+function openGroup(g){
+  if (!S.groups.some(x => x.id===g.id)) S.groups.push({id:g.id, name:g.name, code:g.code});
+  LS.set('ddv_groups', S.groups);
+  S.group = g.id; LS.set('ddv_group', g.id);
+  S.me = meMap()[g.id] || null;
+  Object.assign(S, {players:[], events:[], votes:[], categories:[], loaded:false, error:null});
+  Object.assign(S.f, {anec:null, target:'', note:'', photo:null});
+}
+const inviteLink = g => location.origin + location.pathname + '#g=' + g.code;
+const newCode = () => [...crypto.getRandomValues(new Uint8Array(8))].map(b => 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]).join('');
+if (S.group && !curGroup()) S.group = null;
+if (S.group) S.me = meMap()[S.group] || null;
 const photoCache = new Map();
 const player = id => S.players.find(p => p.id===id);
 const nick = id => { const p = player(id); return p ? p.nickname : 'Un fantasma' };
@@ -372,10 +397,13 @@ const allAnecs = () => [...ANECS, ...S.categories.map(c => ({type:'c_'+c.id, lab
 const anecDef = type => allAnecs().find(a => a.type===type);
 
 async function refresh(){
+  if (!S.group) { S.loaded = true; render(); return }
+  const gid = S.group;
   try{
-    const [players, events, votes, categories] = await Promise.all(['players','events','votes','categories'].map(t => DB.list(t)));
+    const [players, events, votes, categories] = await Promise.all(['players','events','votes','categories'].map(t => DB.list(t, gid)));
+    if (gid !== S.group) return;   // cambiaste de grupo mientras cargaba
     Object.assign(S, {players, events, votes, categories, loaded:true, error:null});
-    if (S.me && !player(S.me)) { S.me = null; LS.set('ddv_me', null) }
+    if (S.me && !player(S.me)) setMe(null);
     await settlePending();
     checkNotifications();
   }catch(err){
@@ -405,13 +433,14 @@ async function settlePending(){
 }
 
 /* ---------------- clasificaciones ---------------- */
-function playersAt(month){ return S.players.filter(p => monthKey(p.created_at) <= month) }
+// month = 'YYYY-MM' para una temporada; null = histórico (todo lo acumulado)
+function playersAt(month){ return month ? S.players.filter(p => monthKey(p.created_at) <= month) : S.players }
 function standings(month){
   const ps = playersAt(month);
   const rows = ps.map(p => ({p, points:0, drinks:0, anec:0, pending:0}));
   const by = Object.fromEntries(rows.map(r => [r.p.id, r]));
   for (const e of S.events) {
-    if (e.month !== month || !by[e.player_id]) continue;
+    if ((month && e.month !== month) || !by[e.player_id]) continue;
     const r = by[e.player_id];
     if (e.status === 'approved') { r.points += e.points; e.kind==='drink' ? r.drinks++ : r.anec++ }
     else if (e.status === 'pending') r.pending++;
@@ -461,7 +490,7 @@ function checkNotifications(){
   // Cambio de líder
   const st = standings(curMonth());
   const lead = st[0] && st[0].points>0 ? st[0].p.id : null;
-  const key = 'ddv_leader_'+curMonth();
+  const key = 'ddv_leader_'+S.group+'_'+curMonth();
   const prev = LS.get(key, undefined);
   // prev === undefined → primera visita del mes en este móvil: se apunta sin escándalo
   if (lead && prev !== undefined && prev !== lead) breaking(st[0].p);
@@ -496,9 +525,28 @@ function masthead(){
   const me = player(S.me);
   return `<header class="mast">
     <div class="logo"><span class="el">ESTO ES</span><span class="big">DRUNK<em>TASY</em></span></div>
-    <div class="mast-bot"><span>Nº ${dayOfYear()} · ${DB.remote ? 'En directo' : 'Modo prueba'}</span>
-      <button class="who ${me?'':'anon'}" data-a="who">${me ? esc(me.nickname) : '¿Quién eres? ▸'}</button></div>
+    <div class="mast-bot">${curGroup()
+      ? `<button class="grp" data-a="groups">${esc(curGroup().name)} ▾</button>
+         <button class="who ${me?'':'anon'}" data-a="who">${me ? esc(me.nickname) : '¿Quién eres? ▸'}</button>`
+      : `<span>Nº ${dayOfYear()} · ${DB.remote ? 'En directo' : 'Modo prueba'}</span>`}</div>
   </header>`;
+}
+function viewSinGrupo(){
+  return `<div class="empty"><span class="stamp red">SIN CUADRILLA</span><h2>Aquí se bebe en grupo</h2>
+    <p>Crea tu cuadrilla y pasa el enlace. ¿Te han invitado? Abre su enlace y entras directo.</p>
+    <form data-f="addgroup"><div class="field"><input name="name" required maxlength="32" placeholder="Los de siempre"></div>
+    <button class="btn red block" type="submit">FUNDAR CUADRILLA</button></form></div>`;
+}
+function groupsModal(){
+  const g = curGroup(), link = g ? inviteLink(g) : '';
+  openModal(`<button class="x" data-a="close">✕</button><h2>Tus cuadrillas</h2><p class="small"><i>Cada una con su ranking, su muro y sus juicios. Lo que pasa en una, se queda en una.</i></p>
+    <ul class="plist">${S.groups.map(x => `<li><button class="${x.id===S.group?'me':''}" data-a="setgroup" data-v="${x.id}"><b>${esc(x.name)}</b><i>${x.id===S.group?'aquí estás':'cambiar'}</i></button></li>`).join('')}</ul>
+    ${g ? `<h2 style="font-size:24px;margin-top:18px">Reclutar para «${esc(g.name)}»</h2>
+      <p class="small">Quien abra este enlace entra en la cuadrilla:</p><code>${esc(link)}</code>
+      <div class="row2" style="margin-top:10px"><button class="btn sm red" data-a="share" data-v="${esc(link)}">COMPARTIR</button><button class="btn sm" data-a="copy" data-v="${esc(link)}">COPIAR</button></div>` : ''}
+    <hr class="rule"><h2 style="font-size:24px">Fundar otra cuadrilla</h2>
+    <form data-f="addgroup"><div class="field"><input name="name" required maxlength="32" placeholder="Los del curro"></div>
+    <button class="btn block" type="submit">FUNDAR</button></form>`);
 }
 function ticker(){
   const items = S.events.filter(e => e.status==='approved').slice(-10).reverse()
@@ -542,10 +590,14 @@ function viewPortada(){
 }
 function medalCard(x){ return `<div class="medal"><div class="t">${x.e} ${esc(x.t)}</div><div class="w">${esc(nick(x.pid))}</div><div class="d">${esc(x.d)}</div></div>` }
 function rankList(st, quiet){
-  const showMonje = st.length >= 2;
+  const total = S.rk === 'total';
+  if (total) { st = standings(null); quiet = !st.some(r => r.points>0) }
+  const showMonje = !total && st.length >= 2;
   const body = (showMonje ? st.slice(0,-1) : st).map((r,i) => `<li><span class="n">${i+1}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
   const M = st[st.length-1];
-  return `<hr class="rule"><h2 class="sect">La clasificación${quiet ? '<small>Todos empatados en santidad. Qué asco.</small>' : ''}</h2>
+  const sub = quiet ? 'Todos empatados en santidad. Qué asco.' : total ? 'Desde el primer día. Aquí no se perdona nada.' : '';
+  return `<hr class="rule"><h2 class="sect">La clasificación${sub ? `<small>${sub}</small>` : ''}</h2>
+    <div class="tabs2 rk"><button class="${total?'':'on'}" data-a="rk" data-v="mes">Este mes</button><button class="${total?'on':''}" data-a="rk" data-v="total">Histórico</button></div>
     <ol class="rank">${body}</ol>
     ${showMonje ? `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>${M.points} ${M.points===1?'punto':'puntos'}. Se le vio pedir agua. Con gas.</p></div>` : ''}`;
 }
@@ -554,7 +606,7 @@ function viewConfesar(){
   if (!S.players.length || !player(S.me)) return emptyBlock('¿Y tú quién eres?', 'Para confesar hay que dar la cara.', '<button class="btn red" data-a="who">DAR LA CARA</button>');
   const f = S.f;
   let h = `<h2 class="sect" style="font-size:40px;margin-top:20px">¿Qué has bebido?</h2>
-    <div class="grid">${DRINKS.map(x => `<button class="opt ${x.type===f.drink?'on':''}" data-a="drink" data-v="${x.type}"><span class="e">${x.emoji}</span><span class="l">${esc(x.label)}</span><span class="p">+${x.points}</span></button>`).join('')}</div>
+    <div class="grid g2">${DRINKS.map(x => `<button class="opt ${x.type===f.drink?'on':''}" data-a="drink" data-v="${x.type}"><span class="e">${x.emoji}</span><span class="l">${esc(x.label)}</span><span class="p">+${x.points}</span></button>`).join('')}</div>
     <div class="confess-row"><div class="qty"><button data-a="qty" data-v="-1">−</button><span>${f.qty}</span><button data-a="qty" data-v="1">+</button></div>
       <button class="btn red" data-a="confess">CONFESAR</button></div>
     <hr class="rule">
@@ -651,6 +703,7 @@ function render(){
   let body;
   if (!S.loaded) body = `<div class="empty"><span class="stamp red">IMPRIMIENDO</span><h2>Calentando rotativas…</h2></div>`;
   else if (S.error) body = emptyBlock('Se ha caído la rotativa', 'No hay manera de hablar con la base de datos. Revisa la conexión en «¿Quién eres?» → Redacción.<br><small>'+esc(S.error.slice(0,160))+'</small>', '<button class="btn red" data-a="who">REVISAR</button>');
+  else if (!curGroup()) body = viewSinGrupo();
   else body = ({portada:viewPortada, confesar:viewConfesar, muro:viewMuro, hemeroteca:viewHemeroteca}[S.tab] || viewPortada)();
   document.getElementById('app').innerHTML = masthead() + body;
   hydratePhotos();
@@ -668,15 +721,17 @@ async function hydratePhotos(){
 function openModal(html){ const m = document.getElementById('modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.classList.add('show') }
 function closeModal(){ const m = document.getElementById('modal'); m.classList.remove('show'); m.innerHTML = '' }
 function whoModal(){
-  const invite = !CFG ? '' : CFG.fixed ? location.origin + location.pathname
-    : location.origin + location.pathname + '#sb=' + encodeURIComponent(CFG.url) + '&k=' + encodeURIComponent(CFG.key);
+  // Enlace del grupo abierto; si la conexión no va fija en CONFIG, la lleva también dentro
+  const g = curGroup();
+  const invite = !CFG || !g ? '' : CFG.fixed ? inviteLink(g)
+    : inviteLink(g) + '&sb=' + encodeURIComponent(CFG.url) + '&k=' + encodeURIComponent(CFG.key);
   openModal(`<button class="x" data-a="close">✕</button><h2>¿Quién firma?</h2><p class="small"><i>Sin contraseñas. Aquí nos fiamos unos de otros (mal hecho).</i></p>
     <ul class="plist">${S.players.map(p => `<li><button class="${p.id===S.me?'me':''}" data-a="iam" data-v="${p.id}"><b>${esc(p.nickname)}</b><i>${esc(p.name)}${p.id===S.me?' · eres tú':''}</i></button></li>`).join('') || '<li class="small" style="padding:10px 0"><i>La plantilla está vacía. Sé el primero en caer.</i></li>'}</ul>
     <h2 style="font-size:24px;margin-top:18px">Fichar sinvergüenza</h2>
     <form data-f="addplayer"><div class="row2"><div class="field"><label>Nombre</label><input name="name" required maxlength="40" placeholder="Francisco"></div><div class="field"><label>Apodo</label><input name="nickname" required maxlength="24" placeholder="El Torete"></div></div>
     <button class="btn red block" type="submit">FICHAR Y FIRMAR</button></form>
     <hr class="rule"><h2 style="font-size:24px">Redacción</h2>
-    ${DB.remote ? `<p class="small">Conectado a la base de datos compartida. Pasa este enlace a la cuadrilla:</p><code>${esc(invite)}</code><button class="btn sm" style="margin-top:10px" data-a="copy" data-v="${esc(invite)}">COPIAR ENLACE</button>`
+    ${DB.remote ? (invite ? `<p class="small">Pasa este enlace para reclutar a «${esc(g.name)}»:</p><code>${esc(invite)}</code><button class="btn sm" style="margin-top:10px" data-a="copy" data-v="${esc(invite)}">COPIAR ENLACE</button>` : '<p class="small">Conectado a la base de datos compartida.</p>')
       : `<div class="mode-note">Modo prueba: los datos solo viven en este móvil. Conecta Supabase para jugar con el grupo.</div>`}
     ${CFG && CFG.fixed ? '' : `<form data-f="cfg" style="margin-top:12px"><div class="field"><label>Supabase URL</label><input name="url" value="${esc(CFG?.url||'')}" placeholder="https://xxxx.supabase.co"></div><div class="field"><label>Anon key</label><input name="key" value="${esc(CFG?.key||'')}" placeholder="eyJhbGciOi…"></div>
       <div class="row2"><button class="btn sm" type="submit">CONECTAR</button>${CFG ? '<button class="btn sm ghost" type="button" data-a="disconnect">MODO PRUEBA</button>' : ''}</div></form>`}`);
@@ -694,7 +749,7 @@ const A = {
   tab: v => { S.tab = v==='juicio' ? 'muro' : v; LS.set('ddv_tab', S.tab); render(); window.scrollTo({top:0}) },
   who: () => whoModal(),
   close: () => closeModal(),
-  iam: v => { S.me = v; LS.set('ddv_me', v); closeModal(); toast('Firmado como «'+nick(v)+'». Ya no hay vuelta atrás.'); render() },
+  iam: v => { setMe(v); closeModal(); toast('Firmado como «'+nick(v)+'». Ya no hay vuelta atrás.'); render() },
   drink: v => { S.f.drink = v; render() },
   anecmodal: () => anecModal(),
   qty: v => { S.f.qty = Math.min(10, Math.max(1, S.f.qty + +v)); render() },
@@ -702,10 +757,17 @@ const A = {
   anec: v => { S.f.anec = v; anecModal() },
   newcat: () => catModal(),
   copy: v => { navigator.clipboard?.writeText(v).then(() => toast('Enlace copiado. Que corra la voz.'), () => toast('Cópialo a mano, que el móvil no se deja.', true)) },
+  share: v => { const g = curGroup();
+    if (navigator.share) navigator.share({title:'Drunktasy', text:`Te reclutan para «${g ? g.name : 'la cuadrilla'}». Aquí se confiesa todo.`, url:v}).catch(() => {});
+    else A.copy(v) },
+  groups: () => groupsModal(),
+  setgroup: v => { const g = S.groups.find(x => x.id===v); if (!g) return; closeModal(); if (v===S.group) return;
+    openGroup(g); render(); refresh(); toast('Ahora en «'+g.name+'».') },
+  rk: v => { S.rk = v; LS.set('ddv_rk', v); render() },
   disconnect: () => { LS.set('ddv_cfg', null); CFG = null; DB = localDB(); closeModal(); refresh() },
   confess: () => guarded(async () => {
     const d = DRINKS.find(x => x.type===S.f.drink); const n = S.f.qty;
-    const row = {player_id:S.me, kind:'drink', type:d.type, label:d.label, points:d.points, status:'approved', month:curMonth(), has_photo:false};
+    const row = {group_id:S.group, player_id:S.me, kind:'drink', type:d.type, label:d.label, points:d.points, status:'approved', month:curMonth(), has_photo:false};
     for (let i=0;i<n;i++) await DB.insert('events', row);
     S.f.qty = 1;
     toast(`+${d.points*n} · ${pick(DRINK_QUIPS, Date.now())}`);
@@ -715,10 +777,10 @@ const A = {
     const f = S.f, def = anecDef(f.anec); if (!def) return;
     const report = f.mode==='report';
     const pid = report ? f.target : S.me; if (!pid) return;
-    const row = {player_id:pid, kind:'anecdote', type:def.type, label:def.label, points:def.points, note:f.note.trim() || null,
+    const row = {group_id:S.group, player_id:pid, kind:'anecdote', type:def.type, label:def.label, points:def.points, note:f.note.trim() || null,
       photo:f.photo, has_photo:!!f.photo, reported_by:report ? S.me : null, status:report ? 'pending' : 'approved', month:curMonth()};
     const saved = await DB.insert('events', row);
-    if (report && saved) await DB.vote({event_id:saved.id, voter_id:S.me, approve:true});
+    if (report && saved) await DB.vote({group_id:S.group, event_id:saved.id, voter_id:S.me, approve:true});
     Object.assign(S.f, {anec:null, note:'', photo:null, target:''});
     closeModal();
    
@@ -733,7 +795,7 @@ const A = {
   }),
   vote: (v, el) => guarded(async () => {
     const approve = el.dataset.y === '1';
-    await DB.vote({event_id:v, voter_id:S.me, approve});
+    await DB.vote({group_id:S.group, event_id:v, voter_id:S.me, approve});
     toast(approve ? 'Culpable. El pueblo te lo agradece.' : 'Inocente. Blandengue.');
     await refresh();
     const e = S.events.find(x => x.id===v);
@@ -760,12 +822,18 @@ document.addEventListener('submit', e => {
   if (f==='addplayer') guarded(async () => {
     const name = data.name.trim(), nickname = data.nickname.trim(); if (!name || !nickname) return;
     if (S.players.some(p => p.nickname.toLowerCase()===nickname.toLowerCase())) return toast('Ese apodo ya está pillado. Echa imaginación.', true);
-    const p = await DB.insert('players', {name, nickname});
-    S.me = p.id; LS.set('ddv_me', p.id); closeModal(); toast('«'+nickname+'» fichado. Bienvenido al lado oscuro.'); await refresh();
+    const p = await DB.insert('players', {group_id:S.group, name, nickname});
+    setMe(p.id); closeModal(); toast('«'+nickname+'» fichado. Bienvenido al lado oscuro.'); await refresh();
   });
   if (f==='addcat') guarded(async () => {
-    const c = await DB.insert('categories', {label:data.label.trim(), points:Math.min(10, Math.max(1, +data.points||1)), emoji:(data.emoji||'🤡').trim()});
+    const c = await DB.insert('categories', {group_id:S.group, label:data.label.trim(), points:Math.min(10, Math.max(1, +data.points||1)), emoji:(data.emoji||'🤡').trim()});
     S.f.anec = 'c_'+c.id; toast('Nuevo delito tipificado.'); await refresh(); anecModal();
+  });
+  if (f==='addgroup') guarded(async () => {
+    const name = (data.name || '').trim(); if (!name) return;
+    const g = await DB.insert('groups', {name, code:newCode()});
+    closeModal(); openGroup(g); render(); await refresh();
+    toast('«'+name+'» fundada. Ahora ficha y recluta.'); whoModal();
   });
   if (f==='cfg') {
     const url = data.url.trim(), key = data.key.trim();
@@ -781,8 +849,27 @@ function shrink(file, max=900){
   });
 }
 
+// Arranque: unirse por enlace #g=CODIGO, o recuperar el grupo de quien ya estaba fichado antes de que hubiera grupos
+async function boot(){
+  try{
+    if (JOIN_CODE) {
+      const g = (await DB.find('groups', 'code', JOIN_CODE))[0];
+      if (g) { const nuevo = !S.groups.some(x => x.id===g.id); openGroup(g); toast(nuevo ? 'Te has unido a «'+g.name+'». Ahora ficha.' : 'De vuelta en «'+g.name+'».') }
+      else toast('Ese enlace no lleva a ninguna cuadrilla. Pide otro.', true, 4000);
+    } else if (!S.groups.length && LS.get('ddv_me', null)) {
+      const p = (await DB.find('players', 'id', LS.get('ddv_me', null)))[0];
+      const g = p && (await DB.find('groups', 'id', p.group_id))[0];
+      if (g) { openGroup(g); setMe(p.id) }
+      LS.set('ddv_me', null);
+    }
+  }catch(err){ console.error(err) }
+  if (S.group && !S.me && JOIN_CODE) setTimeout(() => { if (!S.me && S.loaded && !S.error) whoModal() }, 1200);
+  await refresh();
+}
+// Si ya tenías la app abierta y tocas una invitación, solo cambia el #: recargamos para procesarla
+addEventListener('hashchange', () => { if (/(^|[#&])(g|sb)=/.test(location.hash)) location.reload() });
 render();
-refresh();
+boot();
 setInterval(() => { if (!document.hidden) refresh() }, POLL_MS);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh() });
 </script>
