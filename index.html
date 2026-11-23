@@ -99,6 +99,22 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .monje p{margin:6px 0 0; font-size:14.5px}
 .monje .stamp{position:absolute; right:10px; top:-14px; background:var(--paper)}
 
+/* Podio por escalones */
+.podium{display:grid; grid-template-columns:1fr 1.25fr 1fr; align-items:end; gap:6px; margin:22px 0 0; border-bottom:5px solid var(--ink)}
+.pod{display:flex; flex-direction:column; text-align:center; min-width:0}
+.pod .crown{align-self:center; margin:0 0 10px; font-size:13px}
+.pod .face{aspect-ratio:1; background:#cfc3a2; position:relative; overflow:hidden; display:grid; place-items:center; margin:0 4px 8px; filter:drop-shadow(3px 4px 0 rgba(20,18,16,.85))}
+.pod .face img{width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.35); mix-blend-mode:multiply}
+.pod .ini{font-family:var(--head); font-size:40px; line-height:1; position:relative; text-shadow:3px 3px 0 var(--red)}
+.pod.p1 .ini{font-size:58px; text-shadow:4px 4px 0 var(--red)}
+.pod .pn{font-family:var(--head); text-transform:uppercase; font-size:17px; line-height:1; overflow-wrap:anywhere; padding:0 2px}
+.pod.p1 .pn{font-size:21px}
+.pod .pp{font-family:var(--head); font-size:22px; color:var(--red); line-height:1; margin:3px 0 6px}
+.pod .pp small{font-family:var(--label); font-size:10px; color:var(--ink); margin-left:2px; letter-spacing:.06em}
+.pod .step{background:var(--ink); color:var(--paper); border-top:4px solid var(--red); font-family:var(--head); line-height:1; display:flex; justify-content:center; padding-top:8px; font-size:40px}
+.pod.p1 .step{height:128px; background:var(--red); color:#fff; border-top-color:var(--ink); font-size:62px}
+.pod.p2 .step{height:90px}
+.pod.p3 .step{height:62px}
 .medals-strip{display:flex; gap:8px; overflow-x:auto; padding:6px 2px 12px; scrollbar-width:none}
 .medal{flex:none; border:2px solid var(--ink); background:#fffaf0; padding:8px 10px; min-width:150px; box-shadow:3px 3px 0 var(--ink)}
 .medal .t{font-family:var(--head); font-size:17px; text-transform:uppercase; line-height:1}
@@ -180,6 +196,28 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .season .wn{font-family:var(--head); font-size:24px; text-transform:uppercase; line-height:1}
 .season .mk{font-size:13px; font-style:italic}
 .season .rank{margin:0 12px 12px}
+/* Expedientes */
+.ficha{border:3px solid var(--ink); background:#fbf5e4; padding:12px; margin:14px 0; box-shadow:5px 5px 0 var(--ink)}
+.ficha .fh{display:flex; justify-content:space-between; align-items:center; gap:8px; font-family:var(--label); font-weight:700; font-size:11px; letter-spacing:.08em; border-bottom:1px solid var(--ink); padding-bottom:8px}
+.ficha .fh .stamp{font-size:13px}
+.ficha .fid{display:grid; grid-template-columns:72px 1fr; gap:12px; align-items:center; margin:10px 0}
+.ficha .face{aspect-ratio:1; background:#cfc3a2; position:relative; overflow:hidden; display:grid; place-items:center}
+.ficha .ini{font-family:var(--head); font-size:32px; position:relative; text-shadow:2px 2px 0 var(--red)}
+.ficha h3{font-family:var(--head); font-size:26px; text-transform:uppercase; line-height:.95; margin:0; font-weight:400; overflow-wrap:anywhere}
+.fstats{display:grid; grid-template-columns:repeat(4,1fr); margin:0 0 8px; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink)}
+.fstats div{text-align:center; padding:6px 2px; border-left:1px solid var(--ink)}
+.fstats div:first-child{border-left:0}
+.fstats dt{font-family:var(--label); font-weight:700; font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; line-height:1.1}
+.fstats dd{margin:2px 0 0; font-family:var(--head); font-size:24px; line-height:1}
+.fl{font-size:14px; margin:6px 0}
+.fl b{font-family:var(--label); text-transform:uppercase; font-size:11px; letter-spacing:.06em}
+/* Hemeroteca: mini portadas */
+.mini{border:3px solid var(--ink); background:#fbf5e4; padding:10px 12px 12px; margin:14px 0; box-shadow:5px 5px 0 var(--red)}
+.mini .mmast{display:flex; justify-content:space-between; font-family:var(--label); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.1em; border-bottom:4px double var(--ink); padding-bottom:5px}
+.mini .mmast span:first-child{font-family:var(--head); font-weight:400; font-size:15px; letter-spacing:.04em}
+.mini h3{font-family:var(--head); font-size:28px; text-transform:uppercase; line-height:.95; margin:10px 0 4px; font-weight:400}
+.mini .rank li{padding:5px 0; grid-template-columns:36px 1fr auto}
+.mini .rank .n{font-size:24px} .mini .rank .nm{font-size:17px} .mini .rank .pt{font-size:19px}
 .badges{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
 .badge{font-family:var(--label); font-weight:700; font-size:11px; text-transform:uppercase; border:2px solid var(--ink); padding:2px 6px; background:var(--yellow)}
 
@@ -558,48 +596,47 @@ function ticker(){
 function emptyBlock(title, text, action=''){
   return `<div class="empty"><span class="stamp red">SIN NOTICIAS</span><h2>${title}</h2><p>${text}</p>${action}</div>`;
 }
-// +2 por las comillas «» que rodean el apodo; tope .3 para que un apodo corto no parta la comilla de cierre
-function headSize(text, k=1){ const len = Math.max(4, [...text].length + 2); return `font-size:calc((var(--w) - 32px) * ${Math.min(.3, 1.95/len*k).toFixed(3)})` }
-
+const initials = p => up(p.nickname.replace(/^(el|la|los|las)\s+/i, '').split(/\s+/).map(w => w[0]).join('').slice(0,2));
+const rankRows = (rows, from=1) => rows.map((r,i) => `<li><span class="n">${from+i}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
+function rkToggle(total){
+  return `<div class="tabs2 rk"><button class="${total?'':'on'}" data-a="rk" data-v="mes">Este mes</button><button class="${total?'on':''}" data-a="rk" data-v="total">Histórico</button></div>`;
+}
+// Podio por escalones: 2º a la izquierda, 1º en el centro (más alto), 3º a la derecha
+function podium(top, month){
+  const col = (r, place) => {
+    if (!r) return '<div></div>';
+    const ph = place===1 && month && S.events.filter(e => e.player_id===r.p.id && e.has_photo && e.status==='approved' && e.month===month).pop();
+    return `<div class="pod p${place}">
+      ${place===1 ? '<span class="stamp excl crown">EL DESASTRE</span>' : ''}
+      <div class="face ${place===1?'clip':'clip2'}">${ph ? `<img data-photo="${ph.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><span class="ini">${esc(initials(r.p))}</span>`}</div>
+      <div class="pn">${esc(r.p.nickname)}</div>
+      <div class="pp">${r.points}<small>PTS</small></div>
+      <div class="step"><span>${place}</span></div>
+    </div>`;
+  };
+  return `<div class="podium">${col(top[1],2)}${col(top[0],1)}${col(top[2],3)}</div>`;
+}
 function viewPortada(){
   if (!S.players.length) return ticker() + emptyBlock('Redacción vacía', 'No hay ni un sinvergüenza dado de alta. Así no se vende un periódico.', '<button class="btn red" data-a="who">FICHAR AL PRIMERO</button>');
-  const m = curMonth(), st = standings(m), mes = monthName(m);
-  let h = ticker();
+  const m = curMonth(), total = S.rk === 'total';
+  const st = standings(total ? null : m);
+  let h = ticker() + `<div class="kick-row"><span class="stamp excl">EXCLUSIVA</span><span class="kicker">${total ? 'La clasificación de todos los tiempos' : 'El Desastre del Mes · '+esc(monthName(m))}</span></div>` + rkToggle(total);
   if (!st.some(r => r.points>0)) {
-    h += emptyBlock('Hoy no hay escándalos.', 'Sospechoso. Muy sospechoso. Alguien está mintiendo.', '<button class="btn red" data-a="tab" data-v="confesar">CONFESAR</button>');
-    return h + rankList(st, true);
+    return h + emptyBlock('Hoy no hay escándalos.', 'Sospechoso. Muy sospechoso. Alguien está mintiendo.', '<button class="btn red" data-a="tab" data-v="confesar">CONFESAR</button>')
+      + `<h2 class="sect">Todos empatados<small>En santidad. Qué asco.</small></h2><ol class="rank">${rankRows(st)}</ol>`;
   }
-  const L = st[0], second = st[1];
-  const gap = second ? L.points - second.points : L.points;
-  const subs = [
-    `TOCA FONDO CON <span class="hl">${L.points} PUNTOS</span> Y PIDE OTRA`,
-    `<span class="hl">${L.points} PUNTOS</span> DE VERGÜENZA Y NI UNA PIZCA DE ARREPENTIMIENTO`,
-    `ARRASA CON <span class="hl">${L.points} PUNTOS</span>. SU FAMILIA PIDE DISCRECIÓN`,
-  ];
-  const photoEv = S.events.filter(e => e.player_id===L.p.id && e.has_photo && e.status==='approved' && e.month===m).pop();
-  const ini = L.p.nickname.split(/\s+/).map(w => w[0]).join('').slice(0,2);
-  h += `<section>
-    <div class="kick-row"><span class="stamp excl">EXCLUSIVA</span><span class="kicker">El Desastre del Mes · ${esc(mes)}</span></div>
-    <h1 class="mega" style="${headSize(L.p.nickname)}"><span class="q">«</span>${esc(up(L.p.nickname))}<span class="q">»</span></h1>
-    <h2 class="sub">${pick(subs, m+L.p.id)}</h2>
-    <div class="photo-wrap"><div class="photo clip">
-      ${photoEv ? `<img data-photo="${photoEv.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><div class="initials">${esc(up(ini))}</div>`}</div></div>
-    <p class="lede"><b>${esc(L.p.name)}</b> lidera ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.drinks} ${L.drinks===1?'copa':'copas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'}. ${second ? `Le saca ${gap} a «${esc(second.p.nickname)}».` : 'Nadie le hace sombra.'} Cierre de edición en ${daysLeft()} días.</p>
-  </section>`;
-  return h + rankList(st);
-}
-function medalCard(x){ return `<div class="medal"><div class="t">${x.e} ${esc(x.t)}</div><div class="w">${esc(nick(x.pid))}</div><div class="d">${esc(x.d)}</div></div>` }
-function rankList(st, quiet){
-  const total = S.rk === 'total';
-  if (total) { st = standings(null); quiet = !st.some(r => r.points>0) }
   const showMonje = !total && st.length >= 2;
-  const body = (showMonje ? st.slice(0,-1) : st).map((r,i) => `<li><span class="n">${i+1}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('');
+  const pool = showMonje ? st.slice(0,-1) : st;
+  const L = st[0], second = st[1], gap = second ? L.points - second.points : L.points;
+  h += podium(pool.slice(0,3), total ? null : m);
+  h += total
+    ? `<p class="lede"><b>${esc(L.p.name)}</b> manda en el histórico con ${L.points} puntos acumulados. ${second ? `Le saca ${gap} a «${esc(second.p.nickname)}».` : 'Nadie le hace sombra.'} Aquí no prescribe nada.</p>`
+    : `<p class="lede"><b>${esc(L.p.name)}</b> lidera ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.drinks} ${L.drinks===1?'copa':'copas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'}. ${second ? `Le saca ${gap} a «${esc(second.p.nickname)}».` : 'Nadie le hace sombra.'} Cierre de edición en ${daysLeft()} días.</p>`;
+  const rest = pool.slice(3);
+  if (rest.length) h += `<ol class="rank" style="margin-top:16px">${rankRows(rest, 4)}</ol>`;
   const M = st[st.length-1];
-  const sub = quiet ? 'Todos empatados en santidad. Qué asco.' : total ? 'Desde el primer día. Aquí no se perdona nada.' : '';
-  return `<hr class="rule"><h2 class="sect">La clasificación${sub ? `<small>${sub}</small>` : ''}</h2>
-    <div class="tabs2 rk"><button class="${total?'':'on'}" data-a="rk" data-v="mes">Este mes</button><button class="${total?'on':''}" data-a="rk" data-v="total">Histórico</button></div>
-    <ol class="rank">${body}</ol>
-    ${showMonje ? `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>${M.points} ${M.points===1?'punto':'puntos'}. Se le vio pedir agua. Con gas.</p></div>` : ''}`;
+  if (showMonje) h += `<div class="monje"><span class="stamp ink">EL MONJE</span><h3>«${esc(M.p.nickname)}»</h3><p>${M.points} ${M.points===1?'punto':'puntos'}. Se le vio pedir agua. Con gas.</p></div>`;
+  return h;
 }
 
 function viewConfesar(){
@@ -669,23 +706,50 @@ function viewMuro(){
   if (!ok.length) h += emptyBlock('Hoy no hay escándalos.', 'Sospechoso.', '<button class="btn red" data-a="tab" data-v="confesar">CONFESAR</button>');
   return h + ok.slice(0,60).map(e => story(e)).join('');
 }
+// Archivo: expedientes de cada jugador + hemeroteca con una mini portada por mes pasado
+function ficha(p, i, tot){
+  const mine = S.events.filter(e => e.player_id===p.id && e.status==='approved');
+  const won = seasons().filter(s => { const w = standings(s)[0]; return w && w.p.id===p.id && w.points>0 }).length;
+  const pods = podiumCount(p.id);
+  const byDrink = {};
+  mine.filter(e => e.kind==='drink').forEach(e => byDrink[e.type] = (byDrink[e.type]||0)+1);
+  const fav = Object.entries(byDrink).sort((a,b) => b[1]-a[1])[0];
+  const favD = fav && DRINKS.find(d => d.type===fav[0]);
+  const worst = mine.filter(e => e.kind==='anecdote').sort((a,b) => b.points-a.points || (b.created_at > a.created_at ? 1 : -1))[0];
+  const honors = {};
+  [...seasons(), curMonth()].forEach(mo => medals(mo).filter(x => x.pid===p.id).forEach(x => {
+    const h = honors[x.t] || (honors[x.t] = {e:x.e, n:0}); h.n = x.t==='Reincidente' ? 1 : h.n+1 }));
+  const stampTxt = won ? `CAMPEÓN ×${won}` : pods ? 'FICHADO' : 'SIN ANTECEDENTES';
+  return `<article class="ficha">
+    <div class="fh"><span>EXPEDIENTE Nº ${String(i+1).padStart(3,'0')}</span><span class="stamp ${won?'red':'ink'}">${stampTxt}</span></div>
+    <div class="fid"><div class="face clip2"><div class="halftone"></div><span class="ini">${esc(initials(p))}</span></div>
+      <div><h3>«${esc(p.nickname)}»</h3><p class="small">${esc(p.name)} · en la cuadrilla desde ${esc(monthName(monthKey(p.created_at)))}</p></div></div>
+    <dl class="fstats"><div><dt>Puntos</dt><dd>${tot.points}</dd></div><div><dt>Meses ganados</dt><dd>${won}</dd></div><div><dt>Podios</dt><dd>${pods}</dd></div><div><dt>Copas</dt><dd>${tot.drinks}</dd></div></dl>
+    <p class="fl"><b>Bebida de cabecera:</b> ${favD ? `${favD.emoji} ${esc(favD.label)} (${fav[1]})` : 'Agua, dice.'}</p>
+    <p class="fl"><b>Su peor momento:</b> ${worst ? esc(headline(worst)) : 'Limpio. Demasiado limpio.'}</p>
+    <div class="badges">${Object.keys(honors).length ? Object.entries(honors).map(([t,h]) => `<span class="badge">${h.e} ${esc(t)}${h.n>1?' ×'+h.n:''}</span>`).join('') : '<span class="small"><i>Sin honores. De momento.</i></span>'}</div>
+  </article>`;
+}
+function miniPortada(s){
+  const st = standings(s), W = st[0], M = st.length>1 ? st[st.length-1] : null;
+  const star = S.events.filter(e => e.month===s && e.kind==='anecdote' && e.status==='approved').sort((a,b) => b.points-a.points)[0];
+  const mes = MONTHS[+s.split('-')[1]-1];
+  return `<article class="mini">
+    <div class="mmast"><span>DRUNKTASY</span><span>${esc(monthName(s))}</span></div>
+    <h3>${W && W.points ? `«${esc(up(W.p.nickname))}» SE CORONA EN ${esc(up(mes))}` : 'MES EN BLANCO. NADIE SE MOJÓ'}</h3>
+    ${W && W.points ? `<ol class="rank">${rankRows(st.slice(0,3))}</ol>` : ''}
+    ${M && W && W.points ? `<p class="fl"><b>El Monje:</b> «${esc(M.p.nickname)}», con ${M.points} ${M.points===1?'punto':'puntos'}.</p>` : ''}
+    ${star ? `<p class="fl"><b>Anécdota estrella:</b> ${esc(headline(star))}</p>` : ''}
+  </article>`;
+}
 function viewHemeroteca(){
-  const m = curMonth();
-  let h = `<div style="height:12px"></div><h2 class="sect" style="font-size:40px">Archivo<small>Cada mes, temporada nueva. Lo escrito, escrito queda.</small></h2>`;
-  h += `<h2 class="sect" style="margin-top:18px">Galería de condecorados</h2>`;
-  const md = medals(m);
-  h += S.players.length ? `<ul class="plist">${S.players.map(p => {
-      const mine = md.filter(x => x.pid===p.id); const pc = podiumCount(p.id);
-      return `<li style="padding:10px 0;border-bottom:1px solid var(--ink)"><b style="font-family:var(--head);font-size:21px;text-transform:uppercase;font-weight:400">${esc(p.nickname)}</b> <i class="small">${esc(p.name)} · ${pc} ${pc===1?'podio':'podios'} históricos</i>
-        <div class="badges">${mine.length ? mine.map(x => `<span class="badge">${x.e} ${esc(x.t)}</span>`).join('') : '<span class="small"><i>Sin honores. De momento.</i></span>'}</div></li>`}).join('')}</ul>` : '<p><i>Nadie que condecorar.</i></p>';
+  let h = `<div style="height:12px"></div><h2 class="sect" style="font-size:40px">Archivo<small>Lo escrito, escrito queda.</small></h2>`;
+  h += `<h2 class="sect" style="margin-top:18px">Expedientes<small>Todo lo que la redacción sabe de cada uno.</small></h2>`;
+  const all = standings(null);
+  h += all.length ? all.map(r => ficha(r.p, S.players.indexOf(r.p), r)).join('') : '<p><i>Nadie a quien fichar.</i></p>';
   const ss = seasons();
-  h += `<hr class="rule"><h2 class="sect">Temporadas anteriores</h2>`;
-  if (!ss.length) h += `<p class="small"><i>Esta es la primera temporada. La historia se está escribiendo ahora mismo, y no queda bonita.</i></p>`;
-  h += ss.map(s => {
-    const st = standings(s); const W = st[0], M = st.length>1 ? st[st.length-1] : null;
-    return `<details class="season"><summary><span><span class="mo">${esc(monthName(s))}</span><br><span class="wn">${W && W.points ? '«'+esc(W.p.nickname)+'»' : 'Mes en blanco'}</span><br><span class="mk">${W && W.points ? `Desastre del Mes con ${W.points} pts` : ''}${M ? ` · Monje: ${esc(M.p.nickname)}` : ''}</span></span><span class="stamp excl" style="align-self:center">${W && W.points ? 'CAMPEÓN' : '—'}</span></summary>
-      <ol class="rank">${st.map((r,i) => `<li><span class="n">${i+1}</span><span class="nm">${esc(r.p.nickname)}</span><span class="pt">${r.points}<small>PTS</small></span></li>`).join('')}</ol></details>`;
-  }).join('');
+  h += `<hr class="rule"><h2 class="sect">Hemeroteca<small>La portada de cada mes. Sin derecho a réplica.</small></h2>`;
+  h += ss.length ? ss.map(miniPortada).join('') : `<p class="small"><i>Esta es la primera temporada. La historia se está escribiendo ahora mismo, y no queda bonita.</i></p>`;
   return h;
 }
 
