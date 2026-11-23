@@ -65,9 +65,9 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 /* ---------- FRONT PAGE ---------- */
 .kick-row{display:flex; align-items:center; gap:10px; margin:22px 0 6px; flex-wrap:wrap}
 .kicker{font-family:var(--label); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:13px; border-bottom:3px solid var(--red); color:var(--red)}
-.mega{font-family:var(--head); text-transform:uppercase; line-height:.84; margin:6px 0 4px; word-break:break-word; letter-spacing:-.01em}
+.mega{font-family:var(--head); text-transform:uppercase; line-height:.84; margin:6px 0 .2em; word-break:break-word; letter-spacing:-.01em}
 .mega .q{color:var(--red)}
-.sub{font-family:var(--head); text-transform:uppercase; font-size:26px; line-height:.98; margin:6px 0 12px; font-weight:400}
+.sub{font-family:var(--head); text-transform:uppercase; font-size:26px; line-height:1.2; margin:6px 0 12px; font-weight:400}
 .sub .hl{background:var(--ink); color:var(--yellow); padding:0 6px; box-decoration-break:clone; -webkit-box-decoration-break:clone}
 .photo-wrap{position:relative; margin:4px 0 12px; filter:drop-shadow(5px 6px 0 rgba(20,18,16,.85))}
 .clip{clip-path:var(--jag1)}
@@ -507,7 +507,8 @@ function ticker(){
 function emptyBlock(title, text, action=''){
   return `<div class="empty"><span class="stamp red">SIN NOTICIAS</span><h2>${title}</h2><p>${text}</p>${action}</div>`;
 }
-function headSize(text, k=1){ const len = Math.max(4, [...text].length); return `font-size:calc((var(--w) - 32px) * ${Math.min(.36, 1.95/len*k).toFixed(3)})` }
+// +2 por las comillas «» que rodean el apodo; tope .3 para que un apodo corto no parta la comilla de cierre
+function headSize(text, k=1){ const len = Math.max(4, [...text].length + 2); return `font-size:calc((var(--w) - 32px) * ${Math.min(.3, 1.95/len*k).toFixed(3)})` }
 
 function viewPortada(){
   if (!S.players.length) return ticker() + emptyBlock('Redacción vacía', 'No hay ni un sinvergüenza dado de alta. Así no se vende un periódico.', '<button class="btn red" data-a="who">FICHAR AL PRIMERO</button>');
