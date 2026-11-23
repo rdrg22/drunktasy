@@ -1,14 +1,16 @@
-# EL DIARIO DE LA VERGÜENZA
+# ESTO ES DRUNKTASY
 
 Liga privada de copas y anécdotas para la cuadrilla. Web app móvil en un único `index.html`, sin instalar nada.
 
-## Ponerla en marcha
+## En marcha
 
-1. **Base de datos**: crea un proyecto en Supabase y ejecuta `schema.sql` en el SQL Editor.
-2. **Conexión**: abre la app → «¿Quién eres?» → *Redacción* → pega la URL del proyecto y la *anon key*.
-   (O fíjalas en `CONFIG` al principio del `<script>` de `index.html`.)
-3. **Publicar**: súbela a cualquier hosting estático (GitHub Pages, Netlify, Vercel…).
-4. **Invitar**: en *Redacción* aparece un enlace que ya lleva la conexión dentro. Mándalo al grupo.
+- **Web**: https://rdrg22.github.io/drunktasy/ (GitHub Pages, rama `main`). Ese enlace es el que se manda al grupo.
+- **Base de datos**: Supabase, proyecto «rdrg22's Project», tablas `ddv_` creadas con `schema.sql`.
+  La URL y la *anon key* van fijas en `CONFIG` al principio del `<script>` de `index.html`.
+
+Para montarla en otro sitio: ejecuta `schema.sql` en un proyecto de Supabase, cambia `CONFIG` (o déjalo vacío y
+conecta desde «¿Quién eres?» → *Redacción*, que genera un enlace `#sb=…&k=…` con la conexión dentro) y sube
+`index.html` a cualquier hosting estático.
 
 Sin Supabase funciona en **modo prueba**: los datos se quedan en ese navegador.
 

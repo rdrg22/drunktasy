@@ -1,4 +1,4 @@
--- EL DIARIO DE LA VERGÜENZA · esquema Supabase
+-- ESTO ES DRUNKTASY · esquema Supabase
 -- Ejecutar en el SQL Editor del proyecto. Tablas con prefijo ddv_ para no pisar nada.
 
 create table if not exists ddv_players (

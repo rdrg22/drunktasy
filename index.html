@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F3EBD3">
-<title>El Diario de la Vergüenza</title>
+<title>Esto es Drunktasy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@500;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -76,7 +76,6 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .photo img{width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.35) brightness(1.02); mix-blend-mode:multiply}
 .halftone{position:absolute; inset:0; background:radial-gradient(circle at 50% 40%, transparent 0 30%, rgba(0,0,0,.0) 31%), radial-gradient(var(--ink) 1.3px, transparent 1.6px) 0 0/7px 7px; opacity:.28}
 .initials{font-family:var(--head); font-size:110px; line-height:1; color:var(--ink); position:relative; text-shadow:6px 6px 0 var(--red)}
-.band{position:absolute; top:22px; right:-58px; width:240px; text-align:center; transform:rotate(38deg); background:var(--red); color:#fff; font-family:var(--head); font-size:20px; padding:4px 0; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); letter-spacing:.06em; z-index:2}
 .photo-cap{font-family:var(--label); font-size:11px; text-transform:uppercase; letter-spacing:.05em; margin-top:-4px; color:var(--ink2)}
 .lede{font-size:15.5px; margin:10px 0 0}
 .lede::first-letter{font-family:var(--head); float:left; font-size:56px; line-height:.8; padding:4px 6px 0 0; color:var(--red)}
@@ -242,12 +241,16 @@ code{font-size:12px; word-break:break-all; background:#fffaf0; border:1px solid 
 
 <script>
 /* ======================================================================
-   EL DIARIO DE LA VERGÜENZA
+   ESTO ES DRUNKTASY
    Configura aquí tu Supabase (o pásalo por el enlace de invitación:
    index.html#sb=https://xxxx.supabase.co&k=ANON_KEY).
    Sin configuración, la app funciona en MODO PRUEBA (solo este navegador).
    ====================================================================== */
-const CONFIG = { SUPABASE_URL: '', SUPABASE_ANON_KEY: '' };
+// La anon key es pública por diseño: solo da acceso a las tablas ddv_ (RLS en schema.sql).
+const CONFIG = {
+  SUPABASE_URL: 'https://ejenkkzfkvpipfrdxfia.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZW5ra3pma3ZwaXBmcmR4ZmlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTU4MjUsImV4cCI6MjEwNzk5MTgyNX0.A1Itj0xMPuhfet0EOoXzNzIv-vJvyVuetB7l1q2_U4Y',
+};
 const POLL_MS = 8000;
 
 const DRINKS = [
@@ -492,7 +495,7 @@ function breaking(p){
 function masthead(){
   const me = player(S.me);
   return `<header class="mast">
-    <div class="logo"><span class="el">EL DIARIO DE LA</span><span class="big">VERGÜEN<em>ZA</em></span></div>
+    <div class="logo"><span class="el">ESTO ES</span><span class="big">DRUNK<em>TASY</em></span></div>
     <div class="mast-bot"><span>Nº ${dayOfYear()} · ${DB.remote ? 'En directo' : 'Modo prueba'}</span>
       <button class="who ${me?'':'anon'}" data-a="who">${me ? esc(me.nickname) : '¿Quién eres? ▸'}</button></div>
   </header>`;
@@ -532,8 +535,7 @@ function viewPortada(){
     <h1 class="mega" style="${headSize(L.p.nickname)}"><span class="q">«</span>${esc(up(L.p.nickname))}<span class="q">»</span></h1>
     <h2 class="sub">${pick(subs, m+L.p.id)}</h2>
     <div class="photo-wrap"><div class="photo clip">
-      ${photoEv ? `<img data-photo="${photoEv.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><div class="initials">${esc(up(ini))}</div>`}
-      <div class="band">ÚLTIMA HORA</div></div></div>
+      ${photoEv ? `<img data-photo="${photoEv.id}" alt="Prueba gráfica">` : `<div class="halftone"></div><div class="initials">${esc(up(ini))}</div>`}</div></div>
     <p class="lede"><b>${esc(L.p.name)}</b> lidera ${esc(MONTHS[+m.split('-')[1]-1])} con ${L.drinks} ${L.drinks===1?'copa':'copas'} y ${L.anec} ${L.anec===1?'anécdota':'anécdotas'}. ${second ? `Le saca ${gap} a «${esc(second.p.nickname)}».` : 'Nadie le hace sombra.'} Cierre de edición en ${daysLeft()} días.</p>
   </section>`;
   return h + rankList(st);
@@ -666,7 +668,8 @@ async function hydratePhotos(){
 function openModal(html){ const m = document.getElementById('modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.classList.add('show') }
 function closeModal(){ const m = document.getElementById('modal'); m.classList.remove('show'); m.innerHTML = '' }
 function whoModal(){
-  const invite = CFG ? location.origin + location.pathname + '#sb=' + encodeURIComponent(CFG.url) + '&k=' + encodeURIComponent(CFG.key) : '';
+  const invite = !CFG ? '' : CFG.fixed ? location.origin + location.pathname
+    : location.origin + location.pathname + '#sb=' + encodeURIComponent(CFG.url) + '&k=' + encodeURIComponent(CFG.key);
   openModal(`<button class="x" data-a="close">✕</button><h2>¿Quién firma?</h2><p class="small"><i>Sin contraseñas. Aquí nos fiamos unos de otros (mal hecho).</i></p>
     <ul class="plist">${S.players.map(p => `<li><button class="${p.id===S.me?'me':''}" data-a="iam" data-v="${p.id}"><b>${esc(p.nickname)}</b><i>${esc(p.name)}${p.id===S.me?' · eres tú':''}</i></button></li>`).join('') || '<li class="small" style="padding:10px 0"><i>La plantilla está vacía. Sé el primero en caer.</i></li>'}</ul>
     <h2 style="font-size:24px;margin-top:18px">Fichar sinvergüenza</h2>
