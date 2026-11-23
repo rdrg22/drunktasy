@@ -145,6 +145,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--red); box-shadow:4px 
 .sins{list-style:none; padding:0; margin:8px 0; border-top:1px solid var(--ink)}
 .sins li{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dotted var(--ink); font-size:14.5px; gap:8px}
 .sins .x{font-family:var(--label); font-weight:700; font-size:11px; text-transform:uppercase; color:var(--red); border:2px solid var(--red); padding:2px 6px; flex:none}
+.sins .x.armed{background:var(--red); color:#fff}
 
 /* ---------- MURO / JUICIO ---------- */
 .story{margin:22px 0; position:relative}
@@ -559,7 +560,7 @@ function viewConfesar(){
   const today = new Date().toDateString();
   const mine = S.events.filter(e => (e.player_id===S.me && !e.reported_by) || e.reported_by===S.me).filter(e => new Date(e.created_at).toDateString()===today).reverse();
   if (mine.length) h += `<hr class="rule"><h2 class="sect" style="font-size:24px">Hoy llevas</h2>
-    <ul class="sins">${mine.map(e => `<li><span>${e.reported_by ? '🐀 '+esc(nick(e.player_id))+': ' : ''}${esc(e.label)} <b>+${e.points}</b></span><button class="x" data-a="retract" data-v="${e.id}">Retractarse</button></li>`).join('')}</ul>`;
+    <ul class="sins">${mine.map(e => `<li><span>${e.reported_by ? '🐀 '+esc(nick(e.player_id))+': ' : ''}${esc(e.label)} <b>+${e.points}</b></span><button class="x ${S.armed===e.id?'armed':''}" data-a="retract" data-v="${e.id}">${S.armed===e.id ? '¿Seguro? Toca otra vez' : 'Retractarse'}</button></li>`).join('')}</ul>`;
   return h;
 }
 function anecModal(){
@@ -720,7 +721,12 @@ const A = {
     stamp('EXCLUSIVA', report ? 'Denuncia presentada · Pendiente de juicio' : '+'+def.points+' puntos · Ya es portada');
     await refresh();
   }),
-  retract: v => guarded(async () => { if (!confirm('¿Retractarse? La redacción lo anotará como cobardía.')) return; await DB.remove('events', v); toast('Retractado. Cobarde.'); await refresh() }),
+  retract: v => guarded(async () => {
+    // Doble toque: el primero arma el botón 3 s, el segundo borra. Sin confirm().
+    if (S.armed !== v) { S.armed = v; clearTimeout(S.armedT); S.armedT = setTimeout(() => { S.armed = null; render() }, 3000); render(); return }
+    S.armed = null; clearTimeout(S.armedT);
+    await DB.remove('events', v); toast('Retractado. Cobarde.'); await refresh();
+  }),
   vote: (v, el) => guarded(async () => {
     const approve = el.dataset.y === '1';
     await DB.vote({event_id:v, voter_id:S.me, approve});

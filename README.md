@@ -25,6 +25,7 @@ Sin Supabase funciona en **modo prueba**: los datos se quedan en ese navegador.
 - Las categorías personalizadas las crea cualquiera (1–10 pts).
 - Confesar una anécdota propia cuenta al momento. Delatar a otro la deja **PENDIENTE DE JUICIO**: el chivato vota culpable de oficio y gana la mayoría simple del resto del grupo (sin contar al acusado).
 - La temporada es el mes natural. El ranking se reinicia solo y los meses pasados quedan en *Archivo*.
-- Medallas: El Fantasma, El Filósofo de las 4AM, El Que Siempre Dice La Última, Reincidente (3 meses en el podio), El Poeta del Ex, El Alquimista y El Chivato.
+- Medallas: El Fantasma (cero actividad en el mes), El Filósofo de las 4AM (2+ registros entre las 3 y las 6), El Que Siempre Dice La Última (cierra 2+ noches) y Reincidente (3 meses en el podio).
+- «Retractarse» pide doble toque: el primero avisa, el segundo borra.
 
 ⚠️ No hay contraseñas: quien tenga el enlace puede leer y escribir. No lo pongas en un grupo de 200 personas.
